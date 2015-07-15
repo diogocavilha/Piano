@@ -1,3 +1,9 @@
+# Installing
+
+```bash
+composer require piano/mvc
+```
+
 # Controller
 
 #### Redirecting
