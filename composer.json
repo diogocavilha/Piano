@@ -1,0 +1,19 @@
+{
+    "name": "piano/mvc",
+    "description": "A very simple MVC support and routing.",
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "authors": [
+        {
+            "name": "Diogo Alexsander Cavilha",
+            "email": "diogocavilha@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-0": {
+            "Piano": ""
+        }
+    }
+}
