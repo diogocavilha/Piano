@@ -1,6 +1,9 @@
 {
-    "name": "piano/mvc",
-    "description": "A very simple MVC support and routing.",
+    "name": "root/piano-project",
+    "description": "Piano MVC application project.",
+    "require": {
+        "piano/mvc": "1.1.0"
+    },
     "require-dev": {
         "phpunit/phpunit": "*"
     },
@@ -10,10 +13,9 @@
             "email": "diogocavilha@gmail.com"
         }
     ],
-    "require": {},
     "autoload": {
         "psr-0": {
-            "Piano": ""
+            "app": "src/"
         }
     }
 }
