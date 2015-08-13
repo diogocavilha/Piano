@@ -4,6 +4,12 @@
 composer require piano/mvc
 ```
 
+# Creating a basic project structure
+
+```bash
+composer create-project piano/mvc project-name dev-project
+```
+
 # Controller
 
 #### Redirecting
