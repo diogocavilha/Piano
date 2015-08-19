@@ -42,6 +42,27 @@ $id = $this->getParam('id');
 $params = $this->getParams();
 ```
 
+#### Methods:
+
+##### initialize()
+
+If you need to create a constructor method for your controller, you can do this by creating a method called `initialize()` instead of `__construct()`.
+The `__construct()` method is already being used by `Piano\Mvc\Controller`.
+
+```php
+<?php
+
+namespace app\modules\application\controllers;
+
+class IndexController extends Piano\Mvc\Controller
+{
+    protected function initialize()
+    {
+        // Do some action before executing any other code of your controller.
+    }
+}
+```
+
 -----------------------------------------------
 
 # View
@@ -93,7 +114,6 @@ $this->partial('/path/to/file', ['title' => '']);
     <input type="submit" name="Send">
 </form>
 ```
-
 -----------------------------------------------
 
 # Application
