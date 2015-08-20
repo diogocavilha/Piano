@@ -143,4 +143,50 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
         return $config;
     }
+
+    /**
+     * @dataProvider jsPathProvider
+     */
+    public function testAddJsShouldReturnAnInstanceOfView($expected, $actual)
+    {
+        $this->assertInstanceOf($expected, $this->view->addJs($actual));
+    }
+
+    public function testSetJsShouldReturnAnInstanceOfView()
+    {
+        $expected = $this->view->setJs(['path/to/file.js']);
+        $this->assertInstanceOf('Piano\Mvc\View', $expected);
+    }
+
+    /**
+     * @dataProvider cssPathProvider
+     */
+    public function testAddCssShouldReturnAnInstanceOfView($expected, $actual)
+    {
+        $this->assertInstanceOf($expected, $this->view->addCss($actual));
+    }
+
+    public function testSetCssShouldReturnAnInstanceOfView()
+    {
+        $expected = $this->view->setCss(['path/to/file.css']);
+        $this->assertInstanceOf('Piano\Mvc\View', $expected);
+    }
+
+    public function jsPathProvider()
+    {
+        return [
+            ['Piano\Mvc\View', 'path/to/file.js'],
+            ['Piano\Mvc\View', null],
+            ['Piano\Mvc\View', ''],
+        ];
+    }
+
+    public function cssPathProvider()
+    {
+        return [
+            ['Piano\Mvc\View', 'path/to/file.css'],
+            ['Piano\Mvc\View', null],
+            ['Piano\Mvc\View', ''],
+        ];
+    }
 }
