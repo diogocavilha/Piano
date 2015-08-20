@@ -25,6 +25,9 @@ class View
      */
     private $config;
 
+    private $jsFilesPath = [];
+    private $cssFilesPath = [];
+
     public function __construct(\Piano\Application $application)
     {
         $this->application = $application;
@@ -125,5 +128,61 @@ class View
         }
 
         return $this->application->getRouter()->getUrl($routeName, $params);
+    }
+
+    public function addJs($jsFilePath = null)
+    {
+        if (!is_null($jsFilePath)) {
+            $this->jsFilesPath[] = $jsFilePath;
+        }
+
+        return $this;
+    }
+
+    public function setJs(array $jsFilesPath)
+    {
+        if (!empty($jsFilesPath)) {
+            $this->jsFilesPath = $jsFilesPath;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function loadJs()
+    {
+        foreach ($this->jsFilesPath as $jsFilePath) {
+            echo "<script src=\"$jsFilePath\"></script>";
+        }
+    }
+
+    public function addCss($cssFilePath = null)
+    {
+        if (!is_null($cssFilePath)) {
+            $this->cssFilesPath[] = $cssFilePath;
+        }
+
+        return $this;
+    }
+
+    public function setCss(array $cssFilesPath)
+    {
+        if (!empty($cssFilesPath)) {
+            $this->cssFilesPath = $cssFilesPath;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function loadCss()
+    {
+        foreach ($this->cssFilesPath as $cssFilePath) {
+            echo "<link href=\"$cssFilePath\" rel=\"stylesheet\">";
+        }
     }
 }
