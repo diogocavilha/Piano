@@ -32,6 +32,10 @@ class Controller
         $this->config = $application->getConfig();
         $this->application = $application;
         $this->view = new View($application);
+
+        if (method_exists($this, 'initialize')) {
+            $this->initialize();
+        }
     }
 
     public function getParams()
