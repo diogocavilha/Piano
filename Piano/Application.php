@@ -139,6 +139,10 @@ class Application
         $this->controllerName = ucfirst($arrayUrl[2]) . 'Controller';
         $this->actionName = $arrayUrl[3];
 
+        $module = $arrayUrl[1];
+        $controller = $arrayUrl[2];
+        $action = $arrayUrl[3];
+
         unset($arrayUrl[0], $arrayUrl[1], $arrayUrl[2], $arrayUrl[3]);
 
         if ($this->router->isSearchEngineFriendly()) {
@@ -152,11 +156,28 @@ class Application
             }
 
             $this->urlParams = $args;
-            $this->run();
 
-            return;
+            $allRoutes = $this->router->getRoutes();
+
+            foreach ($allRoutes as $route) {
+                if ($route['module'] == $module && $route['controller'] == $controller && $route['action'] == $action) {
+                    $friendlyUrl = $route['route'];
+                    $slashParams = $this->getSlashUrlParams($args);
+
+                    header("Location: //{$_SERVER['HTTP_HOST']}{$friendlyUrl}{$slashParams}");
+                }
+            }
         }
 
+        $slashParams = $this->getSlashUrlParams($args);
+
+        $this->urlParams = $args;
+
+        header("Location: //{$_SERVER['HTTP_HOST']}{$urlPath}{$slashParams}");
+    }
+
+    private function getSlashUrlParams($args)
+    {
         $slashParams = '';
         if (!is_null($args) && count($args) > 0) {
             foreach ($args as $key => $value) {
@@ -164,10 +185,7 @@ class Application
             }
         }
 
-        $this->urlParams = $args;
-
-        $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === true ? 'https://' : 'http://';
-        header("Location: {$protocol}{$_SERVER['HTTP_HOST']}{$urlPath}{$slashParams}");
+        return $slashParams;
     }
 
     private function dispatchRouteDefault()
