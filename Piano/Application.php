@@ -165,13 +165,14 @@ class Application
                     $slashParams = $this->getSlashUrlParams($args);
 
                     header("Location: //{$_SERVER['HTTP_HOST']}{$friendlyUrl}{$slashParams}");
+
+                    return;
                 }
             }
         }
 
-        $slashParams = $this->getSlashUrlParams($args);
-
         $this->urlParams = $args;
+        $slashParams = $this->getSlashUrlParams($args);
 
         header("Location: //{$_SERVER['HTTP_HOST']}{$urlPath}{$slashParams}");
     }
