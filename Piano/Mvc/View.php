@@ -70,6 +70,8 @@ class View
             $vars = ['view' => $this->getCompleteViewPath($viewPath)];
         }
 
+        $vars = array_merge($vars, $this->vars);
+
         if ($this->disableLayout) {
             $this->partial($viewPath, $vars);
         } else {
