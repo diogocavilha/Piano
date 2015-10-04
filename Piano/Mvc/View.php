@@ -27,11 +27,27 @@ class View
 
     private $jsFilesPath = [];
     private $cssFilesPath = [];
+    private $vars = [];
 
     public function __construct(\Piano\Application $application)
     {
         $this->application = $application;
         $this->config = $application->getConfig();
+    }
+
+    public function addVar($variable, $value = null)
+    {
+        $this->vars[$variable] = $value;
+    }
+
+    public function setVars(array $variables = array())
+    {
+        $this->vars = $variables;
+    }
+
+    public function getVars()
+    {
+        return $this->vars;
     }
 
     public function render($viewName = null, array $vars = null)

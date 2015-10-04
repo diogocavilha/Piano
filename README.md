@@ -77,6 +77,22 @@ $this->view->render('view-name');
 
 ```php
 $this->view->render('view-name', ['name' => 'Diogo']);
+
+// or
+
+$this->view->addVar('name', 'Diogo');
+$this->view->addVar('email', 'email@domain.com');
+
+$this->view->render('view-name');
+
+// or
+
+$this->view->setVars([
+    'name' => 'Diogo',
+    'email' => 'email@domain.com',
+]);
+
+$this->view->render('view-name');
 ```
 
 So, in the view code you can access the variable:

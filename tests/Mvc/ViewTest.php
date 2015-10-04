@@ -26,6 +26,18 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $this->view->render();
     }
 
+    public function testAddVarMethodShouldWork()
+    {
+        $this->view->addVar('test');
+        $this->assertInternalType('array', $this->view->getVars());
+    }
+
+    public function testSetVarsMethodShouldWork()
+    {
+        $this->view->setVars(['test1' => true, 'test2' => false]);
+        $this->assertInternalType('array', $this->view->getVars());
+    }
+
     /**
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage Partial name is expected.
