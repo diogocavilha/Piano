@@ -72,6 +72,8 @@ class View
 
         $vars = array_merge($vars, $this->vars);
 
+        $this->vars = $vars;
+
         if ($this->disableLayout) {
             $this->partial($viewPath, $vars);
         } else {
@@ -90,8 +92,11 @@ class View
             throw new InvalidArgumentException('Partial name is expected.');
         }
 
+        $partialVars = $this->vars;
+
         if (is_array($vars) && count($vars) > 0) {
-            extract($vars); // @codeCoverageIgnore
+            $partialVars = array_merge($this->vars, $vars);
+            extract($partialVars); // @codeCoverageIgnore
         }
 
         require_once $this->getCompleteViewPath($name); // @codeCoverageIgnore
