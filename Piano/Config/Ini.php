@@ -25,7 +25,7 @@ class Ini
             throw new RuntimeException('Config file not found.');
         }
 
-        $config = parse_ini_file($path, true, INI_SCANNER_TYPED);
+        $config = parse_ini_file($path, true, 2);
 
         $this->config = json_decode(json_encode($config));
     }
