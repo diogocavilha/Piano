@@ -536,3 +536,18 @@ $this->getApplication()->getControllerName();
 ```php
 $this->getApplication()->getActionName();
 ```
+
+---
+
+## Class `Piano\Config\Ini`
+
+The `Piano\Config\Ini` is a ini file parser. You must pass the ini path as an argument to its constructor.
+
+##### Sample
+
+```php
+$config = new Piano\Config\Ini('/path/to/config.ini');
+$configIni = $config->getConfig();
+```
+
+The `getConfig()` method will return the configuration data as a instance of `\StdClass`.

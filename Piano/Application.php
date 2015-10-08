@@ -13,24 +13,25 @@ use InvalidArgumentException;
 class Application
 {
     /**
-     * @var Piano\Config $config
+     * @var Piano\Config\Ini $config
      */
     private $config;
+    private $actionName;
+    private $controllerName;
+    private $defaultModuleName;
+    private $moduleName;
+    private $modulesLayout = [];
+    private $routes;
     private $url;
     private $urlParams;
     private $urlPieces = [];
-    private $moduleName;
-    private $controllerName;
-    private $actionName;
-    private $defaultModuleName;
-    private $routes;
 
     /**
      * @var Piano\Route $route
      */
     private $router;
 
-    public function __construct(\Piano\Config $config, \Piano\Router $router)
+    public function __construct(\Piano\Config\Ini $config, \Piano\Router $router)
     {
         $this->config = $config;
         $this->router = $router;
@@ -44,7 +45,7 @@ class Application
     }
 
     /**
-     * @return Piano\Helpers\Config
+     * @return Piano\Config\Ini
      */
     public function getConfig()
     {
@@ -53,7 +54,8 @@ class Application
 
     public function getApplicationFolderName()
     {
-        return $this->config->get('application_folder');
+        $config = $this->config->getConfig();
+        return $config->defaultDirectory;
     }
 
     public function getDefaultModuleName()
@@ -238,6 +240,17 @@ class Application
     public function getParams()
     {
         return $this->urlParams;
+    }
+
+    public function registerModulesLayout(array $modulesLayouts)
+    {
+        $this->modulesLayouts = $modulesLayouts;
+        return $this;
+    }
+
+    public function getModulesLayout()
+    {
+        return $this->modulesLayouts;
     }
 
     /**

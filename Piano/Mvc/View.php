@@ -120,12 +120,12 @@ class View
             return $this->layout;
         }
 
-        $rootLayouts = $this->config->getArray('layout_module');
+        $modulesLayout = $this->application->getModulesLayout();
 
-        $layouts = array_keys($rootLayouts);
+        $layouts = array_keys($modulesLayout);
         $i = 0;
 
-        foreach ($rootLayouts as $modules) {
+        foreach ($modulesLayout as $modules) {
             if (in_array($this->application->getModuleName(), $modules)) {
                 return $layouts[$i];
             }
