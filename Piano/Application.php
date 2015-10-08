@@ -60,7 +60,8 @@ class Application
 
     public function getDefaultModuleName()
     {
-        return $this->config->get('default_module');
+        $config = $this->config->getConfig();
+        return $config->defaultModule;
     }
 
     /**
@@ -91,7 +92,8 @@ class Application
         }
 
         if ($urlPath == '/') {
-            $this->moduleName = $this->config->get('default_module');
+            $config = $this->config->getConfig();
+            $this->moduleName = $config->defaultModule;
             $this->controllerName = 'IndexController';
             $this->actionName = 'index';
 
