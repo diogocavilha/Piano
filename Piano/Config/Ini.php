@@ -15,7 +15,7 @@ class Ini
 {
     private $config;
 
-    public function __construct($path)
+    public function __construct($path = null)
     {
         if (is_null($path)) {
             throw new RuntimeException('Path cannot be null.');
@@ -25,13 +25,19 @@ class Ini
             throw new RuntimeException('Config file not found.');
         }
 
-        $config = parse_ini_file($path, true);
-
-        $this->config = json_decode(json_encode($config));
+        $this->config = parse_ini_file($path, true);
     }
 
-    public function getConfig()
+    public function get($key = null)
     {
-        return $this->config;
+        if (is_null($key)) {
+            return $this->config;
+        }
+
+        if (!array_key_exists($key, $this->config)) {
+            return null;
+        }
+
+        return $this->config[$key];
     }
 }

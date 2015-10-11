@@ -90,19 +90,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
 
     private function getConfig()
     {
-        $config = new \Piano\Config();
-        $config->setApplicationFolder('application')
-            ->setDefaultModule('testDefaultModuleName')
-            ->setLayoutPerModule([
-                'base' => [
-                    'application',
-                ],
-                'admin' => [
-                    'admin',
-                ],
-            ]);
-
-
+        $config = new \Piano\Config\Ini('tests/configTest.ini');
         return $config;
     }
 }

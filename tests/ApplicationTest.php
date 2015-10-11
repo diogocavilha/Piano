@@ -49,20 +49,15 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     {
         $router = $this->getRouter();
         $config = $this->getConfig();
-        $config->setApplicationFolder('appFolder');
+        // $config->setApplicationFolder('appFolder');
         $app = new Piano\Application($config, $router);
 
-        $this->assertEquals('appFolder', $app->getApplicationFolderName());
-
-        $config->setApplicationFolder('application_folder');
-        $app = new Piano\Application($config, $router);
-
-        $this->assertEquals('application_folder', $app->getApplicationFolderName());
+        $this->assertEquals('Piano', $app->getApplicationFolderName());
     }
 
     public function testGetConfigShouldReturnInstanceOfPianoConfig()
     {
-        $this->assertInstanceOf('Piano\Config', $this->app->getConfig());
+        $this->assertInstanceOf('Piano\Config\Ini', $this->app->getConfig());
     }
 
     public function testGetRouterShouldWork()
@@ -72,7 +67,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
 
     public function testGetDefaultModuleNameShouldWork()
     {
-        $this->assertEquals('testDefaultModuleName', $this->app->getDefaultModuleName());
+        $this->assertEquals('authentication', $this->app->getDefaultModuleName());
     }
 
     public function testGetModuleNameShouldWork()
@@ -228,18 +223,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
 
     private function getConfig()
     {
-        $config = new \Piano\Config();
-        $config->setApplicationFolder('application')
-            ->setDefaultModule('testDefaultModuleName')
-            ->setLayoutPerModule([
-                'base' => [
-                    'application',
-                ],
-                'admin' => [
-                    'admin',
-                ],
-            ]);
-
+        $config = new \Piano\Config\Ini('tests/configTest.ini');
         return $config;
     }
 }

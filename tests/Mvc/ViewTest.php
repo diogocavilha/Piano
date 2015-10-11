@@ -56,7 +56,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
     public function testGetCompleteViewPathShouldWork()
     {
-        $expected = '../src/application/menu.phtml';
+        $expected = '../src/Piano/menu.phtml';
         $this->assertEquals($expected, $this->view->getCompleteViewPath('/menu'));
     }
 
@@ -140,19 +140,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
     private function getConfig()
     {
-        $config = new \Piano\Config();
-        $config->setApplicationFolder('application')
-            ->setDefaultModule('testDefaultModuleName')
-            ->setLayoutPerModule([
-                'base' => [
-                    'application',
-                ],
-                'admin' => [
-                    'admin',
-                ],
-            ]);
-
-
+        $config = new \Piano\Config\Ini('tests/configTest.ini');
         return $config;
     }
 

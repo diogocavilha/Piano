@@ -54,14 +54,14 @@ class Application
 
     public function getApplicationFolderName()
     {
-        $config = $this->config->getConfig();
-        return $config->defaultDirectory;
+        $config = $this->config->get();
+        return $config['defaultDirectory'];
     }
 
     public function getDefaultModuleName()
     {
-        $config = $this->config->getConfig();
-        return $config->defaultModule;
+        $config = $this->config->get();
+        return $config['defaultModule'];
     }
 
     /**
@@ -92,8 +92,8 @@ class Application
         }
 
         if ($urlPath == '/') {
-            $config = $this->config->getConfig();
-            $this->moduleName = $config->defaultModule;
+            $config = $this->config->get();
+            $this->moduleName = $config['defaultModule'];
             $this->controllerName = 'IndexController';
             $this->actionName = 'index';
 
