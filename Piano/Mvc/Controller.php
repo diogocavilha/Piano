@@ -62,6 +62,7 @@ class Controller
         }
 
         $this->application->redirect($url, $args);
+        exit();
     }
 
     public function getApplication()
