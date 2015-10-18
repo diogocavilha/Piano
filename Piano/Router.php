@@ -197,13 +197,13 @@ class Router
         $urlParamsRegex = [];
         if (!empty($arrayUrlParams)) {
             foreach ($arrayUrlParams as $key => $value) {
-                $urlParams[] = '/' . substr($key, 1) . '/' . $params[substr($key, 1)];
-                $urlParamsRegex[] = '/' . substr($key, 1) . '/' . $arrayUrlParams[$key];
+                $urlParams[] = substr($key, 1) . '/' . $params[substr($key, 1)];
+                $urlParamsRegex[] = substr($key, 1) . '/' . $arrayUrlParams[$key];
             }
         }
 
-        $url .= implode('/', $urlParams);
-        $urlRegex .= implode('/', $urlParamsRegex);
+        $url .= '/' . implode('/', $urlParams);
+        $urlRegex .= '/' . implode('/', $urlParamsRegex);
 
         // TODO
         // Maybe validate the URL against $urlRegex?
