@@ -563,10 +563,11 @@ The `Piano\Config\Pdo` provide us an easier way to configure a `\Pdo` connection
 ```php
 // The config array must be like this.
 $config = [
-    'dbHost' => 'localhost',
-    'dbName' => '',
-    'dbUser' => '',
-    'dbPass' => '',
+    'dbAdapter' => 'mysql',
+    'dbHost'    => 'localhost',
+    'dbName'    => '',
+    'dbUser'    => '',
+    'dbPass'    => '',
 ];
 
 $pdo = new Piano\Config\Pdo($config);
