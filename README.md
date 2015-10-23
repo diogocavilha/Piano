@@ -553,3 +553,23 @@ $configIni = $config->get();
 
 $configIni = $config->get('section_name');
 ```
+
+## Class `Piano\Config\Pdo`
+
+The `Piano\Config\Pdo` provide us an easier way to configure a `\Pdo` connection. You must pass an config array as an argument to its constructor.
+
+##### Sample
+
+```php
+// The config array must be like this.
+$config = [
+    'dbHost' => 'localhost',
+    'dbName' => '',
+    'dbUser' => '',
+    'dbPass' => '',
+];
+
+$pdo = new Piano\Config\Pdo($config);
+$pdo = $pdo->get();
+
+```
