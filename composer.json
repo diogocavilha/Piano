@@ -2,7 +2,8 @@
     "name": "piano/mvc",
     "description": "A very simple MVC support and routing.",
     "require-dev": {
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "*",
+        "phpunit/dbunit": ">=1.2"
     },
     "authors": [
         {
