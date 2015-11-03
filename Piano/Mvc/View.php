@@ -86,16 +86,15 @@ class View
      * @param string $partialName
      * @param array $vars
      */
-    public function partial($name = null, array $vars = null)
+    public function partial($name = null, array $vars = [])
     {
         if (is_null($name)) {
             throw new InvalidArgumentException('Partial name is expected.');
         }
 
-        $partialVars = $this->vars;
+        $partialVars = array_merge($this->vars, $vars);
 
-        if (is_array($vars) && count($vars) > 0) {
-            $partialVars = array_merge($this->vars, $vars);
+        if (is_array($partialVars) && count($partialVars) > 0) {
             extract($partialVars); // @codeCoverageIgnore
         }
 
