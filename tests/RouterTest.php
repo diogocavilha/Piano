@@ -82,7 +82,7 @@ class RouterTest extends PHPUnit_Framework_Testcase
     public function testGetUrlShouldWork($router)
     {
         $router->enableSearchEngineFriendly(false);
-        $this->assertEquals('/application/index/index', $router->getUrl('default'));
+        $this->assertEquals('/application/index/index/', $router->getUrl('default'));
         $this->assertEquals('/application/user/edit/id/', $router->getUrl('user_edit'));
 
         $router->enableSearchEngineFriendly(true);
