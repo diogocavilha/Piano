@@ -1,5 +1,7 @@
 <?php
 
+include 'tests/fakeSystem/FakeDataAccess.php';
+
 class DataAccessAbstractTest extends PHPUnit_Extensions_Database_TestCase
 {
     private $stack;
@@ -7,14 +9,14 @@ class DataAccessAbstractTest extends PHPUnit_Extensions_Database_TestCase
 
     public function setUp()
     {
-        $this->stack = $this->getMockForAbstractClass('Piano\Mvc\DataAccessAbstract');
+        $this->stack = new FakeDataAccess($this->getConnection()->getConnection());
     }
 
     public function getConnection()
     {
         if (!$this->conn) {
-            $config     = parse_ini_file('tests/bootstrap/db.ini');
-            $pdo        = new \Piano\Config\Pdo($config);
+            $config = parse_ini_file('tests/bootstrap/db.ini');
+            $pdo = new \Piano\Config\Pdo($config);
             $this->conn = $this->createDefaultDBConnection($pdo->get(), $config['dbName']);
         }
 
@@ -53,12 +55,12 @@ class DataAccessAbstractTest extends PHPUnit_Extensions_Database_TestCase
         ];
 
         $dataBind = [
-            [':name', 'John Doe', PDO::PARAM_STR],
-            [':email', 'john@domain.com', PDO::PARAM_STR],
+            [':name', 'Test', PDO::PARAM_STR],
+            [':email', 'test@domain.com', PDO::PARAM_STR],
         ];
 
         $id = $this->stack->insert($fields, $dataBind);
 
-        $this->markTestIncomplete();
+        $this->assertInternalType('integer', $id, 'Insert should return the record id');
     }
 }
