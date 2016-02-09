@@ -1,13 +1,7 @@
-## Installing
+# Creating the project structure
 
 ```bash
-composer require piano/mvc
-```
-
-## Creating a basic project structure
-
-```bash
-composer create-project piano/mvc project-name dev-project
+composer create-project piano/mvc myProject dev-project
 ```
 
 ## Controller
@@ -572,5 +566,90 @@ $config = [
 
 $pdo = new Piano\Config\Pdo($config);
 $pdo = $pdo->get();
+```
 
+## Class `Piano\Router`
+
+The `Piano\Router` is a route parser. It helps you to define the application's routes.
+
+##### Sample
+
+```php
+$router = new Piano\Router();
+```
+
+You're able to define all routes as an array or by using the `Piano\Router` object notation.
+
+Defining routes as array.
+
+```php
+$routes = [
+    'default' => [
+        'route' => '/',
+        'module' => 'application',
+        'controller' => 'index',
+        'action' => 'index',
+    ],
+    'contact' => [
+        'route' => '/contact',
+        'module' => 'application',
+        'controller' => 'index',
+        'action' => 'contact',
+    ],
+    'userEdit' => [
+        'route' => '/user/:id',
+        'module' => 'application',
+        'controller' => 'user',
+        'action' => 'edit',
+        [
+            ':id' => '\d+'
+        ]
+    ],
+];
+
+$router->setRoutes($routes);
+```
+
+Defining routes as object.
+
+```php
+$router->addRoute('default', '/', [
+    'module' => 'application',
+    'controller' => 'index',
+    'action' => 'index',
+]);
+
+$router->addRoute('contact', '/contact', [
+    'module' => 'application',
+    'controller' => 'index',
+    'action' => 'contact',
+]);
+
+$router->addRoute('userEdit', '/user/:id', [
+    'module' => 'application',
+    'controller' => 'index',
+    'action' => 'contact',
+    [
+        ':id' => '\d+'
+    ]
+]);
+```
+
+You can also enable/disable SEF. *(It's useful to disable it when developing)*
+It can be done by calling the method `enableSearchEngineFriendly`
+
+```php
+$router->enableSearchEngineFriendly(); // Enable
+$router->enableSearchEngineFriendly(true); // Enable
+$router->enableSearchEngineFriendly(false); // Disable
+```
+
+If you want to get all routes or a particular one, you could do like this:
+
+```php
+// It'll return all your routes definitions.
+$router->getRoutes();
+
+// It'll return informations from the given route, in this case `myRouteName`
+$router->getRoutes('myRouteName');
 ```
