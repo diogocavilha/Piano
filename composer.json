@@ -2,7 +2,7 @@
     "name": "root/piano-project",
     "description": "Piano MVC application project.",
     "require": {
-        "piano/mvc": "1.4.0"
+        "piano/mvc": "1.6.3.1"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
