@@ -216,10 +216,10 @@ In order to load these CSS or JS files in your view/layout you can call the `loa
 
 ```php
 // Loading the js files
-$this->view->loadJs();
+$this->loadJs();
 
 // Loading the css files
-$this->view->loadCss();
+$this->loadCss();
 ```
 
 #### href links
