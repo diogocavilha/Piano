@@ -1,3 +1,10 @@
+#Piano MVC [![Build Status](https://travis-ci.org/diogocavilha/Piano.svg?branch=master)](https://travis-ci.org/diogocavilha/Piano)
+
+
+This is not a micro/mini/whatever framework nor claims to be.
+
+It's only a very simple MVC structure.
+
 # Creating the project structure
 
 ```bash
