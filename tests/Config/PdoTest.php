@@ -22,16 +22,6 @@ class PdoTest extends \PHPUnit_Framework_TestCase
         $pdo = new Pdo($config);
     }
 
-    /**
-     * @test
-     */
-    public function itShouldReturnAPdoInstance()
-    {
-        $pdo = new Pdo($this->config);
-
-        $this->assertInstanceOf('\Pdo', $pdo->get());
-    }
-
     public function configTestDataProvider()
     {
         $adapter = $this->config['dbAdapter'];
