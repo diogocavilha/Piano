@@ -9,8 +9,6 @@
 
 namespace Piano\Config;
 
-use RuntimeException;
-
 class Ini
 {
     private $config;
@@ -18,11 +16,11 @@ class Ini
     public function __construct($path = null)
     {
         if (is_null($path)) {
-            throw new RuntimeException('Path cannot be null.');
+            throw new \RuntimeException('Path cannot be null.');
         }
 
         if (!file_exists($path)) {
-            throw new RuntimeException('Config file not found.');
+            throw new \RuntimeException('Config file not found.');
         }
 
         $this->config = parse_ini_file($path, true);

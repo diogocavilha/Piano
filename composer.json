@@ -12,8 +12,10 @@
     ],
     "require": {},
     "autoload": {
-        "psr-0": {
-            "Piano": ""
+        "psr-4": {
+            "Piano\\": "src/Piano/",
+            "Piano\\Config\\": "src/Piano/Config/",
+            "Piano\\Mvc\\": "src/Piano/Mvc/"
         }
     }
 }

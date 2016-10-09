@@ -1,15 +1,12 @@
 <?php
 
-/**
- * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
- * @package Piano
- */
-
 namespace Piano\Mvc;
 
 use PDO;
-use RuntimeException;
 
+/**
+ * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
+ */
 abstract class DataAccessAbstract
 {
     /**
@@ -47,7 +44,7 @@ abstract class DataAccessAbstract
     public function insert(array $data, array $dataBind)
     {
         if (count($dataBind) == count($dataBind, COUNT_RECURSIVE)) {
-            throw new RuntimeException('Data bind must be a recursive array.');
+            throw new \RuntimeException('Data bind must be a recursive array.');
         }
 
         $fields = implode(', ', array_keys($data));
@@ -81,7 +78,7 @@ abstract class DataAccessAbstract
     public function update(array $data, $where, array $dataBind)
     {
         if (count($dataBind) == count($dataBind, COUNT_RECURSIVE)) {
-            throw new RuntimeException('Data bind must be a recursive array.');
+            throw new \RuntimeException('Data bind must be a recursive array.');
         }
 
         $fields = array();
@@ -122,7 +119,7 @@ abstract class DataAccessAbstract
 
         if (!empty($dataBind)) {
             if (count($dataBind) == count($dataBind, COUNT_RECURSIVE)) {
-                throw new RuntimeException('Data bind must be a recursive array.');
+                throw new \RuntimeException('Data bind must be a recursive array.');
             }
 
             $stmt = $this->bindValues($stmt, $dataBind);

@@ -1,14 +1,10 @@
 <?php
 
-/**
- * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
- * @package Piano
- */
-
 namespace Piano\Mvc;
 
-use InvalidArgumentException;
-
+/**
+ * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
+ */
 class View
 {
     /**
@@ -53,7 +49,7 @@ class View
     public function render($viewName = null, array $vars = null)
     {
         if (is_null($viewName)) {
-            throw new InvalidArgumentException('View name is expected.');
+            throw new \InvalidArgumentException('View name is expected.');
         }
 
         $controller = strtolower(preg_replace('/Controller$/', '', $this->application->getControllerName()));
@@ -89,7 +85,7 @@ class View
     public function partial($name = null, array $vars = [])
     {
         if (is_null($name)) {
-            throw new InvalidArgumentException('Partial name is expected.');
+            throw new \InvalidArgumentException('Partial name is expected.');
         }
 
         $partialVars = array_merge($this->vars, $vars);
@@ -146,7 +142,7 @@ class View
     public function url($routeName = null, array $params = null)
     {
         if (is_null($routeName)) {
-            throw new InvalidArgumentException('Param route name is expected.');
+            throw new \InvalidArgumentException('Param route name is expected.');
         }
 
         return $this->application->getRouter()->getUrl($routeName, $params);
