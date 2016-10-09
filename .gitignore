@@ -1,3 +1,4 @@
 /vendor/
 .phpintel/
 coverage-html/
+tests/coverageReport/
