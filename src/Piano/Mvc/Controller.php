@@ -1,15 +1,12 @@
 <?php
 
-/**
- * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
- * @package Piano
- */
-
 namespace Piano\Mvc;
 
-use InvalidArgumentException;
 use Piano\Mvc\View;
 
+/**
+ * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
+ */
 class Controller
 {
     /**
@@ -46,7 +43,7 @@ class Controller
     public function getParam($name = null, $default = null)
     {
         if (is_null($name)) {
-            throw new InvalidArgumentException('Param name is expected.');
+            throw new \InvalidArgumentException('Param name is expected.');
         }
 
         return $this->application->getParam($name, $default);
@@ -58,7 +55,7 @@ class Controller
     protected function redirect($url = null, array $args = null)
     {
         if (is_null($url)) {
-            throw new InvalidArgumentException('Param url is expected.');
+            throw new \InvalidArgumentException('Param url is expected.');
         }
 
         $this->application->redirect($url, $args);
