@@ -1,14 +1,10 @@
 <?php
 
-/**
- * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
- * @package Piano
- */
-
 namespace Piano;
 
-use InvalidArgumentException;
-
+/**
+ * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
+ */
 class Router
 {
     private $regexDelimiter = '#';
@@ -79,7 +75,7 @@ class Router
         $match = false;
 
         if (is_null($url)) {
-            throw new InvalidArgumentException('Param url is expected.');
+            throw new \InvalidArgumentException('Param url is expected.');
         }
 
         $urlPieces = explode('/', $url);
@@ -142,7 +138,7 @@ class Router
     public function getUrl($name = null, array $params = null)
     {
         if (is_null($name)) {
-            throw new InvalidArgumentException('Param name is expected.');
+            throw new \InvalidArgumentException('Param name is expected.');
         }
 
         if ($this->searchEngineFriendly) {

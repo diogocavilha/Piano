@@ -1,15 +1,10 @@
 <?php
 
-/**
- * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
- * @package Piano
- */
-
 namespace Piano;
 
-use Exception;
-use InvalidArgumentException;
-
+/**
+ * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
+ */
 class Application
 {
     /**
@@ -130,7 +125,7 @@ class Application
     public function redirect($urlPath = null, array $args = null)
     {
         if (is_null($urlPath)) {
-            throw new InvalidArgumentException('Param url is expected.');
+            throw new \InvalidArgumentException('Param url is expected.');
         }
 
         $arrayUrl = explode('/', $urlPath);
@@ -273,7 +268,7 @@ class Application
             return $value;
         }
 
-        throw new Exception("Key '$name' not found in array.");
+        throw new \Exception("Key '$name' not found in array.");
     }
 
     public function run()

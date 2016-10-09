@@ -2,8 +2,6 @@
 
 namespace Piano\Config;
 
-use RuntimeException;
-
 class Pdo
 {
     private $config;
@@ -25,27 +23,27 @@ class Pdo
         $runtimeExceptionMessage = "Invalid data access. Key %s is expected.";
 
         if (!is_array($config) || empty($config)) {
-            throw new RuntimeException('Invalid data access. Array is expected.');
+            throw new \RuntimeException('Invalid data access. Array is expected.');
         }
 
         if (!array_key_exists('dbAdapter', $config)) {
-            throw new RuntimeException(sprintf($runtimeExceptionMessage, 'dbAdapter'));
+            throw new \RuntimeException(sprintf($runtimeExceptionMessage, 'dbAdapter'));
         }
 
         if (!array_key_exists('dbHost', $config)) {
-            throw new RuntimeException(sprintf($runtimeExceptionMessage, 'dbHost'));
+            throw new \RuntimeException(sprintf($runtimeExceptionMessage, 'dbHost'));
         }
 
         if (!array_key_exists('dbName', $config)) {
-            throw new RuntimeException(sprintf($runtimeExceptionMessage, 'dbName'));
+            throw new \RuntimeException(sprintf($runtimeExceptionMessage, 'dbName'));
         }
 
         if (!array_key_exists('dbUser', $config)) {
-            throw new RuntimeException(sprintf($runtimeExceptionMessage, 'dbUser'));
+            throw new \RuntimeException(sprintf($runtimeExceptionMessage, 'dbUser'));
         }
 
         if (!array_key_exists('dbPass', $config)) {
-            throw new RuntimeException(sprintf($runtimeExceptionMessage, 'dbPass'));
+            throw new \RuntimeException(sprintf($runtimeExceptionMessage, 'dbPass'));
         }
     }
 }
