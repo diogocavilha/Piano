@@ -550,9 +550,15 @@ The `Piano\Config\Ini` is a ini file parser. You must pass the ini path as an ar
 $config = new Piano\Config\Ini('/path/to/config.ini');
 $configIni = $config->get();
 
-// or
+// getting a simple value
+
+$configIni = $config->get('name');
+// If "name" doesn't exist in config file, it will return an empty array.
+
+// getting a section
 
 $configIni = $config->get('section_name');
+// If section_name doesn't exist in config file, it will return an empty array.
 ```
 
 ## Class `Piano\Config\Pdo`
