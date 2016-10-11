@@ -1,0 +1,129 @@
+<?php
+
+use Piano\Config\Ini;
+
+class IniTest extends \PHPUnit_Framework_TestCase
+{
+    public $class;
+
+    public function setUp()
+    {
+        $this->class = new Ini('tests/configTest.ini');
+    }
+
+    /**
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage Config file not found.
+     * @dataProvider invalidConfigFilePathProvider
+     */
+    public function testItMustThrowAnInvalidArgumentExceptionWhenConfigFilePathIsNotValid($invalidPath)
+    {
+        $class = new Ini($invalidPath);
+    }
+
+    public function invalidConfigFilePathProvider()
+    {
+        return [
+            [''],
+            ['foo/bar/configTest.ini'],
+        ];
+    }
+
+    /**
+     * @expectedException TypeError
+     */
+    public function testItMustThrowAnExceptionWhenConfigFilePathIsNotValid()
+    {
+        new Ini();
+    }
+
+    public function testItMustReturnAllSectionsAsArray()
+    {
+        $config = $this->class->get();
+
+        $this->assertInternalType('array', $config, 'Config should be an array');
+        $this->assertArraySubset(
+            [
+                'development' => [
+                    'databaseAdapter' => 'mysql',
+                    'databaseHost' => 'localhost',
+                    'databaseDbname' => 'banco_development',
+                    'databaseUsername' => 'root',
+                    'databasePassword' => 'admin',
+                ]
+            ],
+            $config,
+            'Config array must have a subarray "development"'
+        );
+
+        $this->assertArraySubset(
+            [
+                'production' => [
+                    'databaseAdapter' => 'mysql',
+                    'databaseHost' => 'localhost',
+                    'databaseDbname' => 'banco_production',
+                    'databaseUsername' => 'root',
+                    'databasePassword' => 'admin',
+                ],
+            ],
+            $config,
+            'Config array must have a subarray "production"'
+        );
+    }
+
+    public function testItShouldReturnTheRootVariablesAsArray()
+    {
+        $config = $this->class->get();
+
+        $this->assertInternalType('array', $config, 'Config should be an array');
+        $this->assertArrayHasKey('defaultLocale', $config);
+        $this->assertEquals('pt_BR', $config['defaultLocale']);
+
+        $this->assertArrayHasKey('defaultTimezone', $config);
+        $this->assertEquals('America/Sao_Paulo', $config['defaultTimezone']);
+
+        $this->assertArrayHasKey('defaultModule', $config);
+        $this->assertEquals('authentication', $config['defaultModule']);
+
+        $this->assertArrayHasKey('defaultDirectory', $config);
+        $this->assertEquals('Piano', $config['defaultDirectory']);
+    }
+
+    public function testItShouldReturnASubsetConfigByItsKey()
+    {
+        $config = $this->class->get('development');
+        $this->assertInternalType('array', $config, 'It must return a subset array');
+        $this->assertArrayHasKey('databaseAdapter', $config, 'Key "databaseAdapter" must exist');
+        $this->assertArrayHasKey('databaseHost', $config, 'Key "databaseHost" must exist');
+        $this->assertArrayHasKey('databaseDbname', $config, 'Key "databaseDbname" must exist');
+        $this->assertArrayHasKey('databaseUsername', $config, 'Key "databaseUsername" must exist');
+        $this->assertArrayHasKey('databasePassword', $config, 'Key "databasePassword" must exist');
+
+        $this->assertEquals('mysql', $config['databaseAdapter'], 'Key "databaseAdapter" must return "mysql"');
+        $this->assertEquals('localhost', $config['databaseHost'], 'Key "databaseHost" must return "localhost"');
+        $this->assertEquals('banco_development', $config['databaseDbname'], 'Key "databaseDbname" must return "banco_development"');
+        $this->assertEquals('root', $config['databaseUsername'], 'Key "databaseUsername" must return "root"');
+        $this->assertEquals('admin', $config['databasePassword'], 'Key "databasePassword" must return "admin"');
+
+        $config = $this->class->get('production');
+        $this->assertInternalType('array', $config, 'It must return a subset array');
+        $this->assertArrayHasKey('databaseAdapter', $config, 'Key "databaseAdapter" must exist');
+        $this->assertArrayHasKey('databaseHost', $config, 'Key "databaseHost" must exist');
+        $this->assertArrayHasKey('databaseDbname', $config, 'Key "databaseDbname" must exist');
+        $this->assertArrayHasKey('databaseUsername', $config, 'Key "databaseUsername" must exist');
+        $this->assertArrayHasKey('databasePassword', $config, 'Key "databasePassword" must exist');
+
+        $this->assertEquals('mysql', $config['databaseAdapter'], 'Key "databaseAdapter" must return "mysql"');
+        $this->assertEquals('localhost', $config['databaseHost'], 'Key "databaseHost" must return "localhost"');
+        $this->assertEquals('banco_production', $config['databaseDbname'], 'Key "databaseDbname" must return "banco_production"');
+        $this->assertEquals('root', $config['databaseUsername'], 'Key "databaseUsername" must return "root"');
+        $this->assertEquals('admin', $config['databasePassword'], 'Key "databasePassword" must return "admin"');
+    }
+
+    public function testItShouldReturnAnEmptyArrayWhenTheKeyDoesNotExist()
+    {
+        $config = $this->class->get('invalid_key');
+        $this->assertInternalType('array', $config, 'It must return an array');
+        $this->assertEmpty($config, 'Array must be empty');
+    }
+}
