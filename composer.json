@@ -10,7 +10,9 @@
             "email": "diogocavilha@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "pimple/pimple": "3.0.2"
+    },
     "autoload": {
         "psr-4": {
             "Piano\\": "src/Piano/",
