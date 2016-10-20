@@ -3,6 +3,8 @@ version: '2'
 services:
     php:
         image: tuxmate/php:7.0
+        environment:
+            - TERM=xterm
         volumes:
             - ./docker/php7.0/php-fpm.conf:/etc/php/7.0/fpm/pool.d/www.conf
             - .:/www/Piano
