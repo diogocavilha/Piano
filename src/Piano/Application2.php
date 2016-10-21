@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Piano;
 
-use \Pimple\Container;
+use \Piano\Di as Container;
 
 /**
  * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
