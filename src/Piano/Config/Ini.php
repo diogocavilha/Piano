@@ -22,16 +22,13 @@ class Ini
         $this->config = parse_ini_file($path, true);
     }
 
-    public function get(string $key = null) : array
+    public function get(string $key)
     {
-        if (is_null($key)) {
-            return $this->config;
-        }
+        return $this->config[$key] ?? null;
+    }
 
-        if (!array_key_exists($key, $this->config)) {
-            return [];
-        }
-
-        return $this->config[$key];
+    public function toArray() : array
+    {
+        return $this->config;
     }
 }

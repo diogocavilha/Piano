@@ -2,6 +2,9 @@
 
 use Piano\Config\Ini;
 
+/**
+ * @group php7
+ */
 class IniTest extends \PHPUnit_Framework_TestCase
 {
     public $class;
@@ -39,7 +42,12 @@ class IniTest extends \PHPUnit_Framework_TestCase
 
     public function testItMustReturnAllSectionsAsArray()
     {
-        $config = $this->class->get();
+        $this->assertTrue(
+            method_exists($this->class, 'toArray'),
+            'Method "toArray()" must exist'
+        );
+
+        $config = $this->class->toArray();
 
         $this->assertInternalType('array', $config, 'Config should be an array');
         $this->assertArraySubset(
@@ -71,22 +79,36 @@ class IniTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testItShouldReturnTheRootVariablesAsArray()
+    public function testItShouldReturnWholeTheConfigurationAsArray()
     {
-        $config = $this->class->get();
+        $config = $this->class->toArray();
 
         $this->assertInternalType('array', $config, 'Config should be an array');
+
         $this->assertArrayHasKey('defaultLocale', $config);
-        $this->assertEquals('pt_BR', $config['defaultLocale']);
-
         $this->assertArrayHasKey('defaultTimezone', $config);
-        $this->assertEquals('America/Sao_Paulo', $config['defaultTimezone']);
-
         $this->assertArrayHasKey('defaultModule', $config);
-        $this->assertEquals('authentication', $config['defaultModule']);
-
         $this->assertArrayHasKey('defaultDirectory', $config);
+        $this->assertArrayHasKey('development', $config, 'Key "development" must exist');
+        $this->assertArrayHasKey('production', $config, 'Key "production" must exist');
+        $this->assertEquals('pt_BR', $config['defaultLocale']);
+        $this->assertEquals('America/Sao_Paulo', $config['defaultTimezone']);
+        $this->assertEquals('authentication', $config['defaultModule']);
         $this->assertEquals('Piano', $config['defaultDirectory']);
+
+        $developmentSection = $config['development'];
+        $this->assertEquals('mysql', $developmentSection['databaseAdapter'], 'Key "databaseAdapter" must return "mysql"');
+        $this->assertEquals('localhost', $developmentSection['databaseHost'], 'Key "databaseHost" must return "localhost"');
+        $this->assertEquals('banco_development', $developmentSection['databaseDbname'], 'Key "databaseDbname" must return "banco_development"');
+        $this->assertEquals('root', $developmentSection['databaseUsername'], 'Key "databaseUsername" must return "root"');
+        $this->assertEquals('admin', $developmentSection['databasePassword'], 'Key "databasePassword" must return "admin"');
+
+        $productionSection = $config['production'];
+        $this->assertEquals('mysql', $productionSection['databaseAdapter'], 'Key "databaseAdapter" must return "mysql"');
+        $this->assertEquals('localhost', $productionSection['databaseHost'], 'Key "databaseHost" must return "localhost"');
+        $this->assertEquals('banco_production', $productionSection['databaseDbname'], 'Key "databaseDbname" must return "banco_production"');
+        $this->assertEquals('root', $productionSection['databaseUsername'], 'Key "databaseUsername" must return "root"');
+        $this->assertEquals('admin', $productionSection['databasePassword'], 'Key "databasePassword" must return "admin"');
     }
 
     public function testItShouldReturnASubsetConfigByItsKey()
@@ -98,7 +120,6 @@ class IniTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('databaseDbname', $config, 'Key "databaseDbname" must exist');
         $this->assertArrayHasKey('databaseUsername', $config, 'Key "databaseUsername" must exist');
         $this->assertArrayHasKey('databasePassword', $config, 'Key "databasePassword" must exist');
-
         $this->assertEquals('mysql', $config['databaseAdapter'], 'Key "databaseAdapter" must return "mysql"');
         $this->assertEquals('localhost', $config['databaseHost'], 'Key "databaseHost" must return "localhost"');
         $this->assertEquals('banco_development', $config['databaseDbname'], 'Key "databaseDbname" must return "banco_development"');
@@ -112,7 +133,6 @@ class IniTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('databaseDbname', $config, 'Key "databaseDbname" must exist');
         $this->assertArrayHasKey('databaseUsername', $config, 'Key "databaseUsername" must exist');
         $this->assertArrayHasKey('databasePassword', $config, 'Key "databasePassword" must exist');
-
         $this->assertEquals('mysql', $config['databaseAdapter'], 'Key "databaseAdapter" must return "mysql"');
         $this->assertEquals('localhost', $config['databaseHost'], 'Key "databaseHost" must return "localhost"');
         $this->assertEquals('banco_production', $config['databaseDbname'], 'Key "databaseDbname" must return "banco_production"');
@@ -120,10 +140,9 @@ class IniTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('admin', $config['databasePassword'], 'Key "databasePassword" must return "admin"');
     }
 
-    public function testItShouldReturnAnEmptyArrayWhenTheKeyDoesNotExist()
+    public function testItShouldReturnNullWhenTheKeyDoesNotExist()
     {
         $config = $this->class->get('invalid_key');
-        $this->assertInternalType('array', $config, 'It must return an array');
-        $this->assertEmpty($config, 'Array must be empty');
+        $this->assertNull($config, 'It must return null');
     }
 }
