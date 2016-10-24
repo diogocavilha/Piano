@@ -5,7 +5,7 @@ namespace Piano;
 /**
  * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
  */
-class Di extends \Pimple\Container
+class Container extends \Pimple\Container
 {
 
 }

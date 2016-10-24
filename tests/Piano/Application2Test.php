@@ -1,7 +1,7 @@
 <?php
 
 use Piano\Application2 as Application;
-use Piano\Di;
+use Piano\Container;
 
 /**
  * @group php7
@@ -23,7 +23,7 @@ class Application2Test extends PHPUnit_Framework_TestCase
      */
     public function testItMustThrowRuntimeExceptionWhenContainerDoesNotHaveAConfigKey()
     {
-        $container = new \Piano\Di();
+        $container = new Container();
 
         new Application($container);
     }
@@ -34,7 +34,7 @@ class Application2Test extends PHPUnit_Framework_TestCase
      */
     public function testItMustThrowRuntimeExceptionWhenContainerDoesNotHaveARouterKey()
     {
-        $container = new \Piano\Di();
+        $container = new Container();
         $container['config'] = function () {};
 
         new Application($container);
@@ -49,7 +49,7 @@ class Application2Test extends PHPUnit_Framework_TestCase
 
         $container = $this->class->getDi();
 
-        $this->assertInstanceOf('\Piano\Di', $container);
+        $this->assertInstanceOf('\Piano\Container', $container);
         $this->assertInstanceOf('\Pimple\Container', $container);
     }
 
@@ -75,12 +75,12 @@ class Application2Test extends PHPUnit_Framework_TestCase
 
     private function getTestingContainer()
     {
-        $di = new \Piano\Di();
-        $di['config'] = function () {
+        $container = new Container();
+        $container['config'] = function () {
             return new \Piano\Config\Ini('tests/configTest.ini');
         };
 
-        $di['router'] = function () {
+        $container['router'] = function () {
             $routes = [
                 'default' => [
                     'route' => '/',
@@ -123,6 +123,6 @@ class Application2Test extends PHPUnit_Framework_TestCase
             return $router;
         };
 
-        return $di;
+        return $container;
     }
 }

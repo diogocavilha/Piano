@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Piano;
 
-use \Piano\Di as Container;
+use \Piano\Container;
 
 /**
  * @author Diogo Alexsander Cavilha <diogocavilha@gmail.com>
