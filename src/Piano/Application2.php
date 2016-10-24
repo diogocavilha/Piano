@@ -35,4 +35,9 @@ class Application2
     {
         return $this->getDi()['config']->get('defaultDirectory');
     }
+
+    public function getDefaultModuleName() : string
+    {
+        return $this->getDi()['config']->get('defaultModule');
+    }
 }

@@ -63,6 +63,16 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('Piano', $this->class->getApplicationFolderName());
     }
 
+    public function testGetDefaultModuleNameMustReturnTheSetupDefaultModuleName()
+    {
+        $this->assertTrue(
+            method_exists($this->class, 'getDefaultModuleName'),
+            'Method "getDefaultModuleName()" must exist'
+        );
+
+        $this->assertEquals('authentication', $this->class->getDefaultModuleName());
+    }
+
     private function getTestingContainer()
     {
         $di = new \Piano\Di();
