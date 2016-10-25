@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @group php7
+ */
 class RouterTest extends PHPUnit_Framework_Testcase
 {
     private $router;
@@ -14,16 +17,31 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->assertInstanceOf(get_class($this->router), $this->router);
     }
 
-    public function testEnableSearchEngineFriendlyShouldWork()
+    public function testSearchEngineFriendlyMustBeEnabledWithNoParameters()
     {
         $this->router->enableSearchEngineFriendly();
-        $this->assertTrue($this->router->isSearchEngineFriendly());
+        $this->assertTrue(
+            $this->router->isSearchEngineFriendly(),
+            'SEF must be enabled'
+        );
+    }
 
+    public function testSearchEngineFriendlyMustBeEnabledWithParameterTrue()
+    {
         $this->router->enableSearchEngineFriendly(true);
-        $this->assertTrue($this->router->isSearchEngineFriendly());
+        $this->assertTrue(
+            $this->router->isSearchEngineFriendly(),
+            'SEF must be enabled'
+        );
+    }
 
+    public function testSearchEngineFriendlyMustBeDisabledWithParameterFalse()
+    {
         $this->router->enableSearchEngineFriendly(false);
-        $this->assertFalse($this->router->isSearchEngineFriendly());
+        $this->assertFalse(
+            $this->router->isSearchEngineFriendly(),
+            'SEF must be disabled'
+        );
     }
 
     public function testSetRoutesShouldWork()
@@ -38,8 +56,18 @@ class RouterTest extends PHPUnit_Framework_Testcase
     /**
      * @depends testSetRoutesShouldWork
      */
-    public function testAddRouteShouldWork($router)
+    public function testAddRouteMustAddARoute($router)
     {
+        $this->assertTrue(
+            method_exists($router, 'addRoute'),
+            'Method "addRoute()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($router, 'getRoute'),
+            'Method "getRoute()" must exist'
+        );
+
         $router->addRoute('routeTest', '/test', []);
         $this->assertInternalType('array', $router->getRoute('routeTest'));
         $this->assertEquals('/test', $router->getRoute('routeTest')['route']);
