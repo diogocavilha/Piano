@@ -378,9 +378,10 @@ class RouterTest extends PHPUnit_Framework_Testcase
     public function testItMustMatchTheRouteByAGivenUrl()
     {
         $this->router->setRoutes($this->getRoutes());
-        // $this->assertTrue($this->router->match('/'));
+        $this->assertTrue($this->router->match('/'));
         $this->assertTrue($this->router->match('/users/5'));
-        // $this->assertFalse($this->router->match('/route/does/not/exist'));
+        $this->assertTrue($this->router->match('/users/5/nameTest'));
+        $this->assertFalse($this->router->match('/route/does/not/exist'));
     }
 
     // /**
@@ -439,6 +440,16 @@ class RouterTest extends PHPUnit_Framework_Testcase
                 'action' => 'edit',
                 [
                     ':id' => '\d+'
+                ]
+            ],
+            'client_edit' => [
+                'route' => '/users/:id/:name',
+                'module' => 'application',
+                'controller' => 'admin',
+                'action' => 'edit',
+                [
+                    ':id' => '\d+',
+                    ':name' => '\w+',
                 ]
             ],
             'error_404' => [

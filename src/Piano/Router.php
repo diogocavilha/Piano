@@ -79,30 +79,25 @@ class Router
         $urlPieces = explode('/', $url);
         foreach ($this->routes as $routeName => $route) {
             $routePieces = explode('/', $route['route']);
-            $actualUrlVars = [];
             $actualUrlParams = [];
+            $params = [];
             foreach ($routePieces as $pos => $segment) {
                 if (substr($segment, 0, 1) != $this->urlVar) {
                     $actualUrlParams[$pos] = $segment;
                     continue;
                 }
 
-                $actualUrlVars[$pos] = substr($segment, 1);
+                $varName = substr($segment, 1);
+                $params[$varName] = $urlPieces[$pos];
 
                 if (array_key_exists(0, $route)) {
                     $actualUrlParams[$pos] = $route[0][$segment];
                 }
             }
 
-            $params = [];
-            foreach ($actualUrlVars as $varPos => $var) {
-                $params[$var] = $urlPieces[$varPos];
-            }
-
             $actualUrl = implode('/', $actualUrlParams);
             if (preg_match($this->regexDelimiter . '^' . $actualUrl . '$' . $this->regexDelimiter, $url)) {
                 unset($route['route'], $route[0]);
-
                 $this->matchedRoute = $route;
                 $this->matchedRouteParams = $params;
                 $this->matchedRouteName = $routeName;
