@@ -9,7 +9,6 @@ namespace Piano;
  */
 class Router
 {
-    private $regexDelimiter = '#';
     private $urlVar = ':';
     private $routes = [];
     private $matchedRoute = null;
@@ -96,7 +95,7 @@ class Router
             }
 
             $actualUrl = implode('/', $actualUrlParams);
-            if (preg_match($this->regexDelimiter . '^' . $actualUrl . '$' . $this->regexDelimiter, $url)) {
+            if (preg_match('#^' . $actualUrl . '$#', $url)) {
                 unset($route['route'], $route[0]);
                 $this->matchedRoute = $route;
                 $this->matchedRouteParams = $params;
@@ -133,9 +132,9 @@ class Router
         // $urlRegex = $url;
 
         foreach ($params as $key => $value) {
-            if ($k = array_search(':' . $key, $url)) {
+            if ($k = array_search($this->urlVar . $key, $url)) {
                 $url[$k] = $value;
-                // $urlRegex[$k] = $arrayUrlParams[':' . $key];
+                // $urlRegex[$k] = $arrayUrlParams[$this->urlVar . $key];
             }
         }
 
