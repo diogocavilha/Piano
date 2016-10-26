@@ -73,6 +73,25 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('authentication', $this->class->getDefaultModuleName());
     }
 
+    public function testItMustReturnTheModuleName()
+    {
+        $this->assertTrue(
+            method_exists($this->class, 'getModuleName'),
+            'Method "getModuleName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($this->class, 'setUrl'),
+            'Method "setUrl()" must exist'
+        );
+
+        $this->class->setUrl('/admin/index/index');
+        $this->assertEquals('admin', $this->class->getModuleName());
+
+        $this->class->setUrl('/upload/index/index');
+        $this->assertEquals('upload', $this->class->getModuleName());
+    }
+
     private function getTestingContainer()
     {
         $container = new Container();

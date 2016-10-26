@@ -11,8 +11,8 @@ class Router
 {
     private $urlVar = ':';
     private $routes = [];
-    private $matchedRoute = null;
-    private $matchedRouteParams = null;
+    private $matchedRoute = [];
+    private $matchedRouteParams = [];
     private $searchEngineFriendly = false;
 
     public function addRoute(string $name, string $routePath, array $config) : Router
