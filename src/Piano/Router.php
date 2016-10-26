@@ -12,7 +12,6 @@ class Router
     private $urlVar = ':';
     private $routes = [];
     private $matchedRoute = null;
-    private $matchedRouteName = null;
     private $matchedRouteParams = null;
     private $searchEngineFriendly = false;
 
@@ -20,22 +19,14 @@ class Router
     {
         $this->validateConfig($name, $config);
 
-        $params = null;
-
-        foreach ($config as $pos => $arg) {
-            if (is_array($arg)) {
-                $params = $arg;
-                unset($config[$pos]);
-                break;
-            }
+        $route = [];
+        if (array_key_exists(0, $config)) {
+            $route['params'] = $config[0];
+            unset($config[0]);
         }
 
         $route['route'] = $routePath;
         $route += $config;
-
-        if (!is_null($params)) {
-            $route['params'] = $params;
-        }
 
         $this->routes[$name] = $route;
 
@@ -58,19 +49,14 @@ class Router
         return $this->routes[$name] ?? null;
     }
 
-    public function getMatchedRoute()
+    public function getMatchedRoute() : array
     {
         return $this->matchedRoute;
     }
 
-    public function getMatchedRouteParams()
+    public function getMatchedRouteParams() : array
     {
         return $this->matchedRouteParams;
-    }
-
-    public function getMatchedRouteName()
-    {
-        return $this->routes[$this->matchedRouteName];
     }
 
     public function match(string $url) : bool
@@ -78,11 +64,11 @@ class Router
         $urlPieces = explode('/', $url);
         foreach ($this->routes as $routeName => $route) {
             $routePieces = explode('/', $route['route']);
-            $actualUrlParams = [];
+            $actualUrlPiecesPattern = [];
             $params = [];
             foreach ($routePieces as $pos => $segment) {
                 if (substr($segment, 0, 1) != $this->urlVar) {
-                    $actualUrlParams[$pos] = $segment;
+                    $actualUrlPiecesPattern[$pos] = $segment;
                     continue;
                 }
 
@@ -90,16 +76,15 @@ class Router
                 $params[$varName] = $urlPieces[$pos];
 
                 if (array_key_exists(0, $route)) {
-                    $actualUrlParams[$pos] = $route[0][$segment];
+                    $actualUrlPiecesPattern[$pos] = $route[0][$segment];
                 }
             }
 
-            $actualUrl = implode('/', $actualUrlParams);
-            if (preg_match('#^' . $actualUrl . '$#', $url)) {
+            $actualUrlPattern = implode('/', $actualUrlPiecesPattern);
+            if (preg_match('#^' . $actualUrlPattern . '$#', $url)) {
                 unset($route['route'], $route[0]);
                 $this->matchedRoute = $route;
                 $this->matchedRouteParams = $params;
-                $this->matchedRouteName = $routeName;
                 return true;
             }
         }
@@ -107,7 +92,7 @@ class Router
         return false;
     }
 
-    public function getUrl(string $name, array $params = null)
+    public function getUrl(string $name, array $params = null) : string
     {
         if ($this->isSearchEngineFriendly()) {
             return $this->getFriendlyUrlForRoute($name, $params);

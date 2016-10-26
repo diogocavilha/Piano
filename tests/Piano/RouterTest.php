@@ -304,8 +304,8 @@ class RouterTest extends PHPUnit_Framework_Testcase
             'module' => 'application',
             'controller' => 'index',
             'action' => 'index',
-            ':id' => [
-                'name' => 'Diogo'
+            [
+                ':name' => 'Diogo'
             ]
         ]);
 
@@ -316,7 +316,7 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->assertArraySubset(
             [
                 'params' => [
-                    'name' => 'Diogo'
+                    ':name' => 'Diogo'
                 ]
             ],
             $route,
@@ -384,45 +384,69 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->assertFalse($this->router->match('/route/does/not/exist'));
     }
 
-    // /**
-    //  * @depends testSetRoutesShouldWork
-    //  */
-    // public function testGetMatchedRouteShouldWork($router)
-    // {
-    //     $this->assertTrue($router->match('/users/5'));
-    //     $matchedRoute = $router->getMatchedRoute();
+    public function testGetMatchedRouteMustReturnTheMatchedRoute()
+    {
+        $this->assertTrue(
+            method_exists($this->router, 'getMatchedRoute'),
+            'Method "getMatchedRoute()" must exist'
+        );
 
-    //     $this->assertInternalType('array', $matchedRoute);
-    //     $this->assertArrayHasKey('module', $matchedRoute);
-    //     $this->assertArrayHasKey('controller', $matchedRoute);
-    //     $this->assertArrayHasKey('action', $matchedRoute);
-    // }
+        $this->router->setRoutes([
+            'admin_edit' => [
+                'route' => '/users/:id/:name',
+                'module' => 'application',
+                'controller' => 'admin',
+                'action' => 'edit',
+                [
+                    ':id' => '\d+',
+                    ':name' => '\w+',
+                ]
+            ]
+        ]);
 
-    // /**
-    //  * @depends testSetRoutesShouldWork
-    //  */
-    // public function testGetMatchedRouteParamsShouldWork($router)
-    // {
-    //     $this->assertTrue($router->match('/users/5'));
-    //     $routeParams = $router->getMatchedRouteParams();
-    //     $this->assertInternalType('array', $routeParams);
-    //     $this->assertArrayHasKey('id', $routeParams);
-    // }
+        $this->assertTrue($this->router->match('/users/5/TestName'));
 
-    // /**
-    //  * @depends testSetRoutesShouldWork
-    //  */
-    // public function testGetMatchedRouteNameShouldWork($router)
-    // {
-    //     $this->assertTrue($router->match('/users/5'));
-    //     $routeParams = $router->getMatchedRouteName();
+        $matchedRoute = $this->router->getMatchedRoute();
+        $this->assertInternalType(
+            'array',
+            $matchedRoute,
+            'Matched route must be an array'
+        );
+        $this->assertArrayHasKey('module', $matchedRoute);
+        $this->assertArrayHasKey('controller', $matchedRoute);
+        $this->assertArrayHasKey('action', $matchedRoute);
+    }
 
-    //     $this->assertInternalType('array', $routeParams);
-    //     $this->assertArrayHasKey('module', $routeParams);
-    //     $this->assertArrayHasKey('controller', $routeParams);
-    //     $this->assertArrayHasKey('action', $routeParams);
-    //     $this->assertArrayHasKey(0, $routeParams);
-    // }
+    public function testGetMatchedRouteParamsMustReturnAllMatchedRouteParams()
+    {
+        $this->assertTrue(
+            method_exists($this->router, 'getMatchedRouteParams'),
+            'Method "getMatchedRouteParams()" must exist'
+        );
+
+        $this->router->setRoutes([
+            'admin_edit' => [
+                'route' => '/users/:id/:name',
+                'module' => 'application',
+                'controller' => 'admin',
+                'action' => 'edit',
+                [
+                    ':id' => '\d+',
+                    ':name' => '\w+',
+                ]
+            ]
+        ]);
+
+        $this->assertTrue($this->router->match('/users/5/TestName'));
+
+        $routeParams = $this->router->getMatchedRouteParams();
+
+        $this->assertInternalType('array', $routeParams);
+        $this->assertArrayHasKey('id', $routeParams);
+        $this->assertArrayHasKey('name', $routeParams);
+        $this->assertEquals('5', $routeParams['id']);
+        $this->assertEquals('TestName', $routeParams['name']);
+    }
 
     private function getRoutes()
     {
