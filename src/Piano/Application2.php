@@ -68,8 +68,8 @@ class Application2
 
         if ($router->isSearchEngineFriendly() && $routeExists) {
             $routeFound = $router->getMatchedRoute();
-            $this->moduleName = $routeFound['module'];
-            $this->controllerName = ucfirst($routeFound['controller']) . 'Controller';
+            $this->moduleName = $router->getMatchedRoute();
+            $this->controllerName = sprintf('%sController', ucfirst($routeFound['controller']));
             $this->actionName = $routeFound['action'];
             $this->urlParams = $router->getMatchedRouteParams();
             return;
@@ -82,24 +82,26 @@ class Application2
             return;
         }
 
-        $arrayUrl = explode('/', $urlPath);
-
-        if (count($arrayUrl) <= 3) {
+        $urlPieces = explode('/', $urlPath);
+        if (count($urlPieces) <= 3) {
             return $this->dispatchRouteDefault();
         }
 
-        $this->moduleName = $arrayUrl[1];
-        $this->controllerName = ucfirst($arrayUrl[2]) . 'Controller';
-        $this->actionName = $arrayUrl[3];
+        $this->moduleName = $urlPieces[1];
+        $this->controllerName = sprintf('%sController', ucfirst($urlPieces[2]));
+        $this->actionName = $urlPieces[3];
 
-        unset($arrayUrl[0], $arrayUrl[1], $arrayUrl[2], $arrayUrl[3]);
+        unset($urlPieces[0], $urlPieces[1], $urlPieces[2], $urlPieces[3]);
 
-        if (is_null($args)) {
-            $args = [];
-            foreach ($arrayUrl as $key => $value) {
-                if ($key == 0 || $key % 2 == 0) {
-                    $args[$value] = (!isset($arrayUrl[$key+1]) || empty($arrayUrl[$key+1])) ? '' : $arrayUrl[$key+1];
-                }
+        if (!is_null($args)) {
+            $this->urlParams = $args;
+            return;
+        }
+
+        $args = [];
+        foreach ($urlPieces as $key => $value) {
+            if ($key == 0 || $key % 2 == 0) {
+                $args[$value] = (!isset($urlPieces[$key+1]) || empty($urlPieces[$key+1])) ? '' : $urlPieces[$key+1];
             }
         }
 
