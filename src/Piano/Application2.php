@@ -68,7 +68,7 @@ class Application2
 
         if ($router->isSearchEngineFriendly() && $routeExists) {
             $routeFound = $router->getMatchedRoute();
-            $this->moduleName = $router->getMatchedRoute();
+            $this->moduleName = $routeFound['module'];
             $this->controllerName = sprintf('%sController', ucfirst($routeFound['controller']));
             $this->actionName = $routeFound['action'];
             $this->urlParams = $router->getMatchedRouteParams();
