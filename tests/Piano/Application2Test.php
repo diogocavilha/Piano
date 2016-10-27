@@ -73,8 +73,37 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('authentication', $this->class->getDefaultModuleName());
     }
 
-    public function testItMustReturnTheModuleName()
+    // public function testItMustReturnTheModuleNameWithNoSearchEngineFriendly()
+    // {
+    //     $di = $this->getTestingContainer(
+    //         $sef = false
+    //     );
+    //     $this->class = new Application($di);
+
+    //     $this->assertTrue(
+    //         method_exists($this->class, 'getModuleName'),
+    //         'Method "getModuleName()" must exist'
+    //     );
+
+    //     $this->assertTrue(
+    //         method_exists($this->class, 'setUrl'),
+    //         'Method "setUrl()" must exist'
+    //     );
+
+    //     $this->class->setUrl('/admin/index/index');
+    //     $this->assertEquals('admin', $this->class->getModuleName());
+
+    //     $this->class->setUrl('/upload/index/index');
+    //     $this->assertEquals('upload', $this->class->getModuleName());
+    // }
+
+    public function testItMustReturnTheModuleNameWithSearchEngineFriendly()
     {
+        $di = $this->getTestingContainer(
+            $sef = true
+        );
+        $this->class = new Application($di);
+
         $this->assertTrue(
             method_exists($this->class, 'getModuleName'),
             'Method "getModuleName()" must exist'
@@ -85,21 +114,40 @@ class Application2Test extends PHPUnit_Framework_TestCase
             'Method "setUrl()" must exist'
         );
 
-        $this->class->setUrl('/admin/index/index');
-        $this->assertEquals('admin', $this->class->getModuleName());
-
-        $this->class->setUrl('/upload/index/index');
-        $this->assertEquals('upload', $this->class->getModuleName());
+        $this->class->setUrl('/route/doesnot/exit');
+        $this->assertEquals('application', $this->class->getModuleName());
     }
 
-    private function getTestingContainer()
+    public function testItMustReturnTheModuleNameWithSearchEngineFriendlyAndNotInformedUrl()
+    {
+        $di = $this->getTestingContainer(
+            $sef = true
+        );
+        $this->class = new Application($di);
+
+        $this->assertTrue(
+            method_exists($this->class, 'getModuleName'),
+            'Method "getModuleName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($this->class, 'setUrl'),
+            'Method "setUrl()" must exist'
+        );
+
+        $_SERVER['REQUEST_URI'] = 'http://thatstest.com/route/doesnot/exit';
+        $this->class->setUrl();
+        $this->assertEquals('application', $this->class->getModuleName());
+    }
+
+    private function getTestingContainer($searchEngineFriendly = true)
     {
         $container = new Container();
         $container['config'] = function () {
             return new \Piano\Config\Ini('tests/configTest.ini');
         };
 
-        $container['router'] = function () {
+        $container['router'] = function () use ($searchEngineFriendly) {
             $routes = [
                 'default' => [
                     'route' => '/',
@@ -138,6 +186,7 @@ class Application2Test extends PHPUnit_Framework_TestCase
 
             $router = new Piano\Router();
             $router->setRoutes($routes);
+            $router->enableSearchEngineFriendly($searchEngineFriendly);
 
             return $router;
         };
