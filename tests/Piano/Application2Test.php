@@ -206,6 +206,41 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
     }
 
+    public function testItMustSetupTheModuleControllerActionWhenSearchEngineFriendlyIsDisabledAndUrlHasParametersOnIt()
+    {
+        $di = $this->getTestingContainer($sef = false);
+        $class = new Application($di);
+
+        $this->assertTrue(
+            method_exists($class, 'getModuleName'),
+            'Method "getModuleName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getControllerName'),
+            'Method "getControllerName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getActionName'),
+            'Method "getActionName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'setUrl'),
+            'Method "setUrl()" must exist'
+        );
+
+        $class->setUrl('/users/1');
+        $this->assertEquals('application', $class->getModuleName());
+        $this->assertEquals('UserController', $class->getControllerName());
+        $this->assertEquals('edit', $class->getActionName());
+        $params = $class->getParams();
+        $this->assertInternalType('array', $params, 'Parameter must be an array');
+        $this->assertArrayHasKey('id', $params);
+        $this->assertEquals(1, $params['id']);
+    }
+
     private function getTestingContainer($searchEngineFriendly = true)
     {
         $container = new Container();
@@ -227,7 +262,7 @@ class Application2Test extends PHPUnit_Framework_TestCase
                     'controller' => 'index',
                     'action' => 'index'
                 ],
-                'user_edit' => [
+                'userEdit' => [
                     'route' => '/users/:id',
                     'module' => 'application',
                     'controller' => 'user',
@@ -236,7 +271,7 @@ class Application2Test extends PHPUnit_Framework_TestCase
                         ':id' => '\d+'
                     ]
                 ],
-                'error_404' => [
+                'error404' => [
                     'route' => '/error',
                     'module' => 'application',
                     'controller' => 'error',

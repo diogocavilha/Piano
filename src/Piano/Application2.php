@@ -135,7 +135,7 @@ class Application2
     protected function dispatchNotFoundRoute()
     {
         $router = $this->getDi()['router'];
-        $route404 = $router->getRoute('error_404');
+        $route404 = $router->getRoute('error404');
 
         if (is_null($route404)) {
             die('404 - Route not found!'); // @codeCoverageIgnore
