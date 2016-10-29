@@ -73,71 +73,137 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('authentication', $this->class->getDefaultModuleName());
     }
 
-    // public function testItMustReturnTheModuleNameWithNoSearchEngineFriendly()
-    // {
-    //     $di = $this->getTestingContainer(
-    //         $sef = false
-    //     );
-    //     $this->class = new Application($di);
-
-    //     $this->assertTrue(
-    //         method_exists($this->class, 'getModuleName'),
-    //         'Method "getModuleName()" must exist'
-    //     );
-
-    //     $this->assertTrue(
-    //         method_exists($this->class, 'setUrl'),
-    //         'Method "setUrl()" must exist'
-    //     );
-
-    //     $this->class->setUrl('/admin/index/index');
-    //     $this->assertEquals('admin', $this->class->getModuleName());
-
-    //     $this->class->setUrl('/upload/index/index');
-    //     $this->assertEquals('upload', $this->class->getModuleName());
-    // }
-
-    public function testItMustReturnTheModuleNameWithSearchEngineFriendly()
+    public function testItMustSetupTheModuleControllerActionWhenSearchEngineFriendlyIsEnabledAndNotInformedUrl()
     {
-        $di = $this->getTestingContainer(
-            $sef = true
-        );
-        $this->class = new Application($di);
+        $di = $this->getTestingContainer($sef = true);
+        $class = new Application($di);
 
         $this->assertTrue(
-            method_exists($this->class, 'getModuleName'),
+            method_exists($class, 'getModuleName'),
             'Method "getModuleName()" must exist'
         );
 
         $this->assertTrue(
-            method_exists($this->class, 'setUrl'),
-            'Method "setUrl()" must exist'
-        );
-
-        $this->class->setUrl('/route/doesnot/exit');
-        $this->assertEquals('application', $this->class->getModuleName());
-    }
-
-    public function testItMustReturnTheModuleNameWithSearchEngineFriendlyAndNotInformedUrl()
-    {
-        $di = $this->getTestingContainer(
-            $sef = true
-        );
-        $this->class = new Application($di);
-
-        $this->assertTrue(
-            method_exists($this->class, 'getModuleName'),
-            'Method "getModuleName()" must exist'
+            method_exists($class, 'getControllerName'),
+            'Method "getControllerName()" must exist'
         );
 
         $this->assertTrue(
-            method_exists($this->class, 'setUrl'),
+            method_exists($class, 'getActionName'),
+            'Method "getActionName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'setUrl'),
             'Method "setUrl()" must exist'
         );
 
         $_SERVER['REQUEST_URI'] = 'http://thatstest.com/route/doesnot/exit';
-        $this->class->setUrl();
-        $this->assertEquals('application', $this->class->getModuleName());
+        $class->setUrl();
+        $this->assertEquals('application', $class->getModuleName());
+        $this->assertEquals('ErrorController', $class->getControllerName());
+        $this->assertEquals('error', $class->getActionName());
+        $this->assertInternalType('array', $class->getParams());
+        $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
+    }
+
+    public function testItMustSetupTheNotFoundRouteWhenSearchEngineFriendlyIsEnabledAndUrlDoesNotExist()
+    {
+        $di = $this->getTestingContainer($sef = true);
+        $class = new Application($di);
+
+        $this->assertTrue(
+            method_exists($class, 'getModuleName'),
+            'Method "getModuleName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getControllerName'),
+            'Method "getControllerName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getActionName'),
+            'Method "getActionName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'setUrl'),
+            'Method "setUrl()" must exist'
+        );
+
+        $class->setUrl('/route/doesnot/exit');
+        $this->assertEquals('application', $class->getModuleName());
+        $this->assertEquals('ErrorController', $class->getControllerName());
+        $this->assertEquals('error', $class->getActionName());
+        $this->assertInternalType('array', $class->getParams());
+        $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
+    }
+
+    public function testItMustSetupTheModuleControllerActionWhenSearchEngineFriendlyIsEnabledAndUrlIsRoot()
+    {
+        $di = $this->getTestingContainer($sef = true);
+        $class = new Application($di);
+
+        $this->assertTrue(
+            method_exists($class, 'getModuleName'),
+            'Method "getModuleName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getControllerName'),
+            'Method "getControllerName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getActionName'),
+            'Method "getActionName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'setUrl'),
+            'Method "setUrl()" must exist'
+        );
+
+        $class->setUrl('/');
+        $this->assertEquals('application', $class->getModuleName());
+        $this->assertEquals('IndexController', $class->getControllerName());
+        $this->assertEquals('index', $class->getActionName());
+        $this->assertInternalType('array', $class->getParams());
+        $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
+    }
+
+    public function testItMustSetupTheModuleControllerActionWhenSearchEngineFriendlyIsDisabledAndUrlHasNoParameters()
+    {
+        $di = $this->getTestingContainer($sef = false);
+        $class = new Application($di);
+
+        $this->assertTrue(
+            method_exists($class, 'getModuleName'),
+            'Method "getModuleName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getControllerName'),
+            'Method "getControllerName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getActionName'),
+            'Method "getActionName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'setUrl'),
+            'Method "setUrl()" must exist'
+        );
+
+        $class->setUrl('/admin');
+        $this->assertEquals('admin', $class->getModuleName());
+        $this->assertEquals('IndexController', $class->getControllerName());
+        $this->assertEquals('index', $class->getActionName());
+        $this->assertInternalType('array', $class->getParams());
+        $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
     }
 
     private function getTestingContainer($searchEngineFriendly = true)

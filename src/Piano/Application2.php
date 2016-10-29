@@ -13,6 +13,9 @@ class Application2
 {
     private $container;
     private $moduleName;
+    private $controllerName;
+    private $actionName;
+    private $urlParams = [];
 
     public function __construct(Container $container)
     {
@@ -47,6 +50,21 @@ class Application2
         return $this->moduleName;
     }
 
+    public function getControllerName() : string
+    {
+        return $this->controllerName;
+    }
+
+    public function getActionName() : string
+    {
+        return $this->actionName;
+    }
+
+    public function getParams() : array
+    {
+        return $this->urlParams;
+    }
+
     /**
      * Sets the requested URL.
      *
@@ -63,32 +81,20 @@ class Application2
 
         $routeExists = $router->match($urlPath);
 
-        if ($router->isSearchEngineFriendly() && !$routeExists) {
-            return $this->dispatchRouteDefault();
+        if (!$routeExists) {
+            return $this->dispatchNotFoundRoute();
         }
 
-        if ($router->isSearchEngineFriendly() && $routeExists) {
-            $routeFound = $router->getMatchedRoute();
-            $this->moduleName = $routeFound['module'];
-            $this->controllerName = sprintf(
-                '%sController',
-                ucfirst($routeFound['controller'])
-            );
-            $this->actionName = $routeFound['action'];
-            $this->urlParams = $router->getMatchedRouteParams();
-            return;
-        }
-
-        if ($urlPath == '/') {
-            $this->moduleName = $this->getDefaultModuleName();
-            $this->controllerName = 'IndexController';
-            $this->actionName = 'index';
+        $routeFound = $router->getMatchedRoute();
+        if ($router->isSearchEngineFriendly() || $urlPath == '/') {
+            $this->setupUrl();
             return;
         }
 
         $urlPieces = explode('/', $urlPath);
         if (count($urlPieces) <= 3) {
-            return $this->dispatchRouteDefault();
+            $this->setupUrl();
+            return;
         }
 
         $this->moduleName = $urlPieces[1];
@@ -112,7 +118,21 @@ class Application2
         $this->urlParams = $args;
     }
 
-    protected function dispatchRouteDefault()
+    private function setupUrl()
+    {
+        $router = $this->getDi()['router'];
+        $routeFound = $router->getMatchedRoute();
+
+        $this->moduleName = $routeFound['module'];
+        $this->controllerName = sprintf(
+            '%sController',
+            ucfirst($routeFound['controller'])
+        );
+        $this->actionName = $routeFound['action'];
+        $this->urlParams = $router->getMatchedRouteParams();
+    }
+
+    protected function dispatchNotFoundRoute()
     {
         $router = $this->getDi()['router'];
         $route404 = $router->getRoute('error_404');
