@@ -61,35 +61,34 @@ class Router
 
     public function match(string $url) : bool
     {
-        $urlPieces = explode('/', $url);
-        foreach ($this->routes as $routeName => $route) {
-            $routePieces = explode('/', $route['route']);
-            $actualUrlPiecesPattern = [];
-            $params = [];
-            foreach ($routePieces as $pos => $segment) {
-                if (substr($segment, 0, 1) != $this->urlVar) {
-                    $actualUrlPiecesPattern[$pos] = $segment;
-                    continue;
+        if ($this->isSearchEngineFriendly()) {
+            $urlPieces = explode('/', $url);
+            foreach ($this->routes as $routeName => $route) {
+                $currentUrlPiecesPattern = [];
+                $currentUrlParams = [];
+                $routePieces = explode('/', $route['route']);
+                foreach ($routePieces as $pos => $segment) {
+                    if (substr($segment, 0, 1) == $this->urlVar) {
+                        $varName = substr($segment, 1);
+                        $currentUrlParams[$varName] = $urlPieces[$pos];
+                        $currentUrlPiecesPattern[$pos] = $route[0][$segment];
+                        continue;
+                    }
+
+                    $currentUrlPiecesPattern[$pos] = $segment;
                 }
 
-                $varName = substr($segment, 1);
-                $params[$varName] = $urlPieces[$pos];
-
-                if (array_key_exists(0, $route)) {
-                    $actualUrlPiecesPattern[$pos] = $route[0][$segment];
+                $currentUrlPattern = implode('/', $currentUrlPiecesPattern);
+                if (preg_match('#^' . $currentUrlPattern . '$#', $url)) {
+                    unset($route['route'], $route[0]);
+                    $this->matchedRoute = $route;
+                    $this->matchedRouteParams = $currentUrlParams;
+                    return true;
                 }
             }
 
-            $actualUrlPattern = implode('/', $actualUrlPiecesPattern);
-            if (preg_match('#^' . $actualUrlPattern . '$#', $url)) {
-                unset($route['route'], $route[0]);
-                $this->matchedRoute = $route;
-                $this->matchedRouteParams = $params;
-                return true;
-            }
+            return false;
         }
-
-        return false;
     }
 
     public function getUrl(string $name, array $params = null) : string
