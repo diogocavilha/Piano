@@ -437,6 +437,45 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->assertEquals('edit', $matchedRoute['action']);
     }
 
+    public function testGetMatchedRouteMustReturnTheMatchedRouteWhenSearchEngineFriendlyIsDisabled()
+    {
+        $this->router->enableSearchEngineFriendly(false);
+
+        $this->assertTrue(
+            method_exists($this->router, 'getMatchedRoute'),
+            'Method "getMatchedRoute()" must exist'
+        );
+
+        $this->router->setRoutes([
+            'admin_edit' => [
+                'route' => '/admin/:id/:name',
+                'module' => 'application',
+                'controller' => 'admin',
+                'action' => 'edit',
+                [
+                    ':id' => '\d+',
+                    ':name' => '\w+',
+                ]
+            ]
+        ]);
+
+        $this->assertTrue($this->router->match('/application/admin/edit'));
+
+        $matchedRoute = $this->router->getMatchedRoute();
+
+        $this->assertInternalType(
+            'array',
+            $matchedRoute,
+            'Matched route must be an array'
+        );
+        $this->assertArrayHasKey('module', $matchedRoute);
+        $this->assertArrayHasKey('controller', $matchedRoute);
+        $this->assertArrayHasKey('action', $matchedRoute);
+        $this->assertEquals('application', $matchedRoute['module']);
+        $this->assertEquals('admin', $matchedRoute['controller']);
+        $this->assertEquals('edit', $matchedRoute['action']);
+    }
+
     public function testGetMatchedRouteParamsMustReturnAllMatchedRouteParamsWhenSearchEngineFriendlyIsEnabled()
     {
         $this->router->enableSearchEngineFriendly(true);
@@ -448,7 +487,7 @@ class RouterTest extends PHPUnit_Framework_Testcase
 
         $this->router->setRoutes([
             'admin_edit' => [
-                'route' => '/users/:id/:name',
+                'route' => '/admin/:id/:name',
                 'module' => 'application',
                 'controller' => 'admin',
                 'action' => 'edit',
@@ -459,7 +498,40 @@ class RouterTest extends PHPUnit_Framework_Testcase
             ]
         ]);
 
-        $this->assertTrue($this->router->match('/users/5/TestName'));
+        $this->assertTrue($this->router->match('/admin/5/TestName'));
+
+        $routeParams = $this->router->getMatchedRouteParams();
+
+        $this->assertInternalType('array', $routeParams);
+        $this->assertArrayHasKey('id', $routeParams);
+        $this->assertArrayHasKey('name', $routeParams);
+        $this->assertEquals('5', $routeParams['id']);
+        $this->assertEquals('TestName', $routeParams['name']);
+    }
+
+    public function testGetMatchedRouteParamsMustReturnAllMatchedRouteParamsWhenSearchEngineFriendlyIsDisabled()
+    {
+        $this->router->enableSearchEngineFriendly(false);
+
+        $this->assertTrue(
+            method_exists($this->router, 'getMatchedRouteParams'),
+            'Method "getMatchedRouteParams()" must exist'
+        );
+
+        $this->router->setRoutes([
+            'admin_edit' => [
+                'route' => '/admin/:id/:name',
+                'module' => 'application',
+                'controller' => 'admin',
+                'action' => 'edit',
+                [
+                    ':id' => '\d+',
+                    ':name' => '\w+',
+                ]
+            ]
+        ]);
+
+        $this->assertTrue($this->router->match('/application/admin/edit/id/5/name/TestName'));
 
         $routeParams = $this->router->getMatchedRouteParams();
 
