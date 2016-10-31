@@ -71,58 +71,19 @@ class Application2
      * In case the URL does not exist, sets the default URL to the default module.
      * @access public
      */
-    public function setUrl($urlPath = null, array $args = null)
+    public function setUrl(string $urlPath = '')
     {
         $router = $this->getDi()['router'];
 
-        if (is_null($urlPath)) {
+        if (empty($urlPath)) {
             $urlPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         }
 
-        $routeExists = $router->match($urlPath);
-
-        if (!$routeExists) {
+        if (!$router->match($urlPath)) {
             return $this->dispatchNotFoundRoute();
         }
 
         $routeFound = $router->getMatchedRoute();
-        if ($router->isSearchEngineFriendly() || $urlPath == '/') {
-            $this->setupUrl();
-            return;
-        }
-
-        $urlPieces = explode('/', $urlPath);
-        if (count($urlPieces) <= 3) {
-            $this->setupUrl();
-            return;
-        }
-
-        $this->moduleName = $urlPieces[1];
-        $this->controllerName = $urlPieces[2];
-        $this->actionName = $urlPieces[3];
-
-        unset($urlPieces[0], $urlPieces[1], $urlPieces[2], $urlPieces[3]);
-
-        if (!is_null($args)) {
-            $this->urlParams = $args;
-            return;
-        }
-
-        $args = [];
-        foreach ($urlPieces as $key => $value) {
-            if ($key == 0 || $key % 2 == 0) {
-                $args[$value] = (!isset($urlPieces[$key+1]) || empty($urlPieces[$key+1])) ? '' : $urlPieces[$key+1];
-            }
-        }
-
-        $this->urlParams = $args;
-    }
-
-    private function setupUrl()
-    {
-        $router = $this->getDi()['router'];
-        $routeFound = $router->getMatchedRoute();
-
         $this->moduleName = $routeFound['module'];
         $this->controllerName = $routeFound['controller'];
         $this->actionName = $routeFound['action'];
