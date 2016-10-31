@@ -80,6 +80,7 @@ class Router
             $currentUrlPattern = implode('/', $currentUrlPiecesPattern);
             if (preg_match('#^' . $currentUrlPattern . '$#', $url)) {
                 unset($route['route'], $route[0]);
+                $route['controller'] = $this->createControllerName($route['controller']);
                 $this->matchedRoute = $route;
                 $this->matchedRouteParams = $currentUrlParams;
                 return true;
@@ -106,6 +107,7 @@ class Router
 
             if (count($urlPieces) == 4) {
                 unset($route['route'], $route[0]);
+                $route['controller'] = $this->createControllerName($route['controller']);
                 $this->matchedRoute = $route;
                 return true;
             }
@@ -127,6 +129,7 @@ class Router
             }
 
             unset($route['route'], $route[0]);
+            $route['controller'] = $this->createControllerName($route['controller']);
             $this->matchedRoute = $route;
             $this->matchedRouteParams = $params;
 
@@ -134,6 +137,14 @@ class Router
         }
 
         return false;
+    }
+
+    private function createControllerName(string $controller) : string
+    {
+        return sprintf(
+            '%sController',
+            ucfirst($controller)
+        );
     }
 
     public function match(string $url) : bool

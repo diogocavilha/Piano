@@ -173,73 +173,73 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
     }
 
-    public function testItMustSetupTheModuleControllerActionWhenSearchEngineFriendlyIsDisabledAndUrlHasNoParameters()
-    {
-        $di = $this->getTestingContainer($sef = false);
-        $class = new Application($di);
+    // public function testItMustSetupTheModuleControllerActionWhenSearchEngineFriendlyIsDisabledAndUrlHasNoParameters()
+    // {
+    //     $di = $this->getTestingContainer($sef = false);
+    //     $class = new Application($di);
 
-        $this->assertTrue(
-            method_exists($class, 'getModuleName'),
-            'Method "getModuleName()" must exist'
-        );
+    //     $this->assertTrue(
+    //         method_exists($class, 'getModuleName'),
+    //         'Method "getModuleName()" must exist'
+    //     );
 
-        $this->assertTrue(
-            method_exists($class, 'getControllerName'),
-            'Method "getControllerName()" must exist'
-        );
+    //     $this->assertTrue(
+    //         method_exists($class, 'getControllerName'),
+    //         'Method "getControllerName()" must exist'
+    //     );
 
-        $this->assertTrue(
-            method_exists($class, 'getActionName'),
-            'Method "getActionName()" must exist'
-        );
+    //     $this->assertTrue(
+    //         method_exists($class, 'getActionName'),
+    //         'Method "getActionName()" must exist'
+    //     );
 
-        $this->assertTrue(
-            method_exists($class, 'setUrl'),
-            'Method "setUrl()" must exist'
-        );
+    //     $this->assertTrue(
+    //         method_exists($class, 'setUrl'),
+    //         'Method "setUrl()" must exist'
+    //     );
 
-        $class->setUrl('/admin');
-        $this->assertEquals('admin', $class->getModuleName());
-        $this->assertEquals('IndexController', $class->getControllerName());
-        $this->assertEquals('index', $class->getActionName());
-        $this->assertInternalType('array', $class->getParams());
-        $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
-    }
+    //     $class->setUrl('/admin');
+    //     $this->assertEquals('admin', $class->getModuleName());
+    //     $this->assertEquals('IndexController', $class->getControllerName());
+    //     $this->assertEquals('index', $class->getActionName());
+    //     $this->assertInternalType('array', $class->getParams());
+    //     $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
+    // }
 
-    public function testItMustSetupTheModuleControllerActionWhenSearchEngineFriendlyIsDisabledAndUrlHasParametersOnIt()
-    {
-        $di = $this->getTestingContainer($sef = false);
-        $class = new Application($di);
+    // public function testItMustSetupTheModuleControllerActionWhenSearchEngineFriendlyIsDisabledAndUrlHasParametersOnIt()
+    // {
+    //     $di = $this->getTestingContainer($sef = false);
+    //     $class = new Application($di);
 
-        $this->assertTrue(
-            method_exists($class, 'getModuleName'),
-            'Method "getModuleName()" must exist'
-        );
+    //     $this->assertTrue(
+    //         method_exists($class, 'getModuleName'),
+    //         'Method "getModuleName()" must exist'
+    //     );
 
-        $this->assertTrue(
-            method_exists($class, 'getControllerName'),
-            'Method "getControllerName()" must exist'
-        );
+    //     $this->assertTrue(
+    //         method_exists($class, 'getControllerName'),
+    //         'Method "getControllerName()" must exist'
+    //     );
 
-        $this->assertTrue(
-            method_exists($class, 'getActionName'),
-            'Method "getActionName()" must exist'
-        );
+    //     $this->assertTrue(
+    //         method_exists($class, 'getActionName'),
+    //         'Method "getActionName()" must exist'
+    //     );
 
-        $this->assertTrue(
-            method_exists($class, 'setUrl'),
-            'Method "setUrl()" must exist'
-        );
+    //     $this->assertTrue(
+    //         method_exists($class, 'setUrl'),
+    //         'Method "setUrl()" must exist'
+    //     );
 
-        $class->setUrl('/users/1');
-        $this->assertEquals('application', $class->getModuleName());
-        $this->assertEquals('UserController', $class->getControllerName());
-        $this->assertEquals('edit', $class->getActionName());
-        $params = $class->getParams();
-        $this->assertInternalType('array', $params, 'Parameter must be an array');
-        $this->assertArrayHasKey('id', $params);
-        $this->assertEquals(1, $params['id']);
-    }
+    //     $class->setUrl('/users/1');
+    //     $this->assertEquals('application', $class->getModuleName());
+    //     $this->assertEquals('UserController', $class->getControllerName());
+    //     $this->assertEquals('edit', $class->getActionName());
+    //     $params = $class->getParams();
+    //     $this->assertInternalType('array', $params, 'Parameter must be an array');
+    //     $this->assertArrayHasKey('id', $params);
+    //     $this->assertEquals(1, $params['id']);
+    // }
 
     private function getTestingContainer($searchEngineFriendly = true)
     {

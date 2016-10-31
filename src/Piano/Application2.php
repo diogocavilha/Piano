@@ -98,7 +98,7 @@ class Application2
         }
 
         $this->moduleName = $urlPieces[1];
-        $this->controllerName = sprintf('%sController', ucfirst($urlPieces[2]));
+        $this->controllerName = $urlPieces[2];
         $this->actionName = $urlPieces[3];
 
         unset($urlPieces[0], $urlPieces[1], $urlPieces[2], $urlPieces[3]);
@@ -124,10 +124,7 @@ class Application2
         $routeFound = $router->getMatchedRoute();
 
         $this->moduleName = $routeFound['module'];
-        $this->controllerName = sprintf(
-            '%sController',
-            ucfirst($routeFound['controller'])
-        );
+        $this->controllerName = $routeFound['controller'];
         $this->actionName = $routeFound['action'];
         $this->urlParams = $router->getMatchedRouteParams();
     }
@@ -142,7 +139,10 @@ class Application2
         }
 
         $this->moduleName = $route404['module'];
-        $this->controllerName = ucfirst($route404['controller']) . 'Controller';
+        $this->controllerName = sprintf(
+            '%sController',
+            ucfirst($route404['controller'])
+        );
         $this->actionName = $route404['action'];
 
         return;

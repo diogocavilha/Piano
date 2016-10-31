@@ -444,7 +444,7 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->assertArrayHasKey('controller', $matchedRoute);
         $this->assertArrayHasKey('action', $matchedRoute);
         $this->assertEquals('application', $matchedRoute['module']);
-        $this->assertEquals('admin', $matchedRoute['controller']);
+        $this->assertEquals('AdminController', $matchedRoute['controller']);
         $this->assertEquals('edit', $matchedRoute['action']);
     }
 
@@ -483,7 +483,7 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->assertArrayHasKey('controller', $matchedRoute);
         $this->assertArrayHasKey('action', $matchedRoute);
         $this->assertEquals('application', $matchedRoute['module']);
-        $this->assertEquals('admin', $matchedRoute['controller']);
+        $this->assertEquals('AdminController', $matchedRoute['controller']);
         $this->assertEquals('edit', $matchedRoute['action']);
     }
 
