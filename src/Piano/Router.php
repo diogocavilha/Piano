@@ -59,7 +59,7 @@ class Router
         return $this->matchedRouteParams;
     }
 
-    private function matchUrlWithSearchEngineFriendlyEnabled(string $url) : bool
+    private function matchUrlWithSEF(string $url) : bool
     {
         $urlPieces = explode('/', $url);
         foreach ($this->routes as $routeName => $route) {
@@ -90,7 +90,7 @@ class Router
         return false;
     }
 
-    private function matchUrlWithSearchEngineFriendlyDisabled(string $url) : bool
+    private function matchUrlWithNoSEF(string $url) : bool
     {
         $urlPieces = explode('/', $url);
         if (count($urlPieces) < 4) {
@@ -150,10 +150,10 @@ class Router
     public function match(string $url) : bool
     {
         if ($this->isSearchEngineFriendly()) {
-            return $this->matchUrlWithSearchEngineFriendlyEnabled($url);
+            return $this->matchUrlWithSEF($url);
         }
 
-        return $this->matchUrlWithSearchEngineFriendlyDisabled($url);
+        return $this->matchUrlWithNoSEF($url);
     }
 
     public function getUrl(string $name, array $params = null) : string
