@@ -127,6 +127,10 @@ class Router
                     }
                 }
 
+                unset($route['route'], $route[0]);
+                $this->matchedRoute = $route;
+                $this->matchedRouteParams = $params;
+
                 return true;
             }
         }

@@ -176,7 +176,8 @@ class RouterTest extends PHPUnit_Framework_Testcase
             'Method "addRoute()" must exist'
         );
 
-        $this->router->addRoute('testRoute', '/test', []);
+        $config = [];
+        $this->router->addRoute('testRoute', '/test', $config);
     }
 
     /**
@@ -207,10 +208,12 @@ class RouterTest extends PHPUnit_Framework_Testcase
             'Method "addRoute()" must exist'
         );
 
-        $this->router->addRoute('testRoute', '/test', [
+        $config = [
             'module' => 'index',
             'action' => 'index',
-        ]);
+        ];
+
+        $this->router->addRoute('testRoute', '/test', $config);
     }
 
     /**
@@ -224,10 +227,12 @@ class RouterTest extends PHPUnit_Framework_Testcase
             'Method "addRoute()" must exist'
         );
 
-        $this->router->addRoute('testRoute', '/test', [
+        $config = [
             'module' => 'index',
             'controller' => 'index',
-        ]);
+        ];
+
+        $this->router->addRoute('testRoute', '/test', $config);
     }
 
     public function testAddRouteMustAddARouteWithNoParameters()
@@ -242,11 +247,13 @@ class RouterTest extends PHPUnit_Framework_Testcase
             'Method "getRoute()" must exist'
         );
 
-        $this->router->addRoute('testRoute', '/test', [
+        $config = [
             'module' => 'application',
             'controller' => 'index',
             'action' => 'index',
-        ]);
+        ];
+
+        $this->router->addRoute('testRoute', '/test', $config);
 
         $route = $this->router->getRoute('testRoute');
 
@@ -267,14 +274,16 @@ class RouterTest extends PHPUnit_Framework_Testcase
             'Method "getRoute()" must exist'
         );
 
-        $this->router->addRoute('testRoute', '/test', [
+        $config = [
             'module' => 'application',
             'controller' => 'index',
             'action' => 'index',
             [
                 ':id' => '\d+',
             ]
-        ]);
+        ];
+
+        $this->router->addRoute('testRoute', '/test', $config);
 
         $route = $this->router->getRoute('testRoute');
 
@@ -300,14 +309,16 @@ class RouterTest extends PHPUnit_Framework_Testcase
             'Method "addRoute()" must exist'
         );
 
-        $this->router->addRoute('routeTest', '/testparams', [
+        $config = [
             'module' => 'application',
             'controller' => 'index',
             'action' => 'index',
             [
                 ':name' => 'Diogo'
             ]
-        ]);
+        ];
+
+        $this->router->addRoute('routeTest', '/testparams', $config);
 
         $route = $this->router->getRoute('routeTest');
 
@@ -333,7 +344,7 @@ class RouterTest extends PHPUnit_Framework_Testcase
         );
     }
 
-    public function testGetUrlMustReturnTheUrlWithNoSearchEngineFriendly()
+    public function testGetUrlMustReturnTheUrlWhenSearchEngineFriendlyIsDisabled()
     {
         $this->router->setRoutes($this->getRoutes());
         $this->router->enableSearchEngineFriendly(false);
@@ -351,7 +362,7 @@ class RouterTest extends PHPUnit_Framework_Testcase
         );
     }
 
-    public function testGetUrlMustReturnTheUrlWithSearchEngineFriendly()
+    public function testGetUrlMustReturnTheUrlWhenSearchEngineFriendlyIsEnabled()
     {
         $this->router->setRoutes($this->getRoutes());
         $this->router->enableSearchEngineFriendly(true);
