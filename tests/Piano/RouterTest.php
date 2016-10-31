@@ -385,12 +385,19 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->assertFalse($this->router->match('/route/does/not/exist'));
     }
 
-    // public function testItMustMatchTheRouteByAGivenUrlWhenSearchEngineFriendlyIsDisabled()
-    // {
-    //     $this->router->setRoutes($this->getRoutes());
-    //     $this->router->enableSearchEngineFriendly(false);
-    //     $this->assertTrue($this->router->match('/application/index/index'));
-    // }
+    public function testItMustMatchTheRouteByAGivenUrlWhenSearchEngineFriendlyIsDisabled()
+    {
+        $this->router->setRoutes($this->getRoutes());
+        $this->router->enableSearchEngineFriendly(false);
+        $this->assertTrue($this->router->match('/application/index/index'));
+        $this->assertTrue($this->router->match('/application/index/redirectTest'));
+        $this->assertTrue(
+            $this->router->match('/application/admin/edit/id/5')
+        );
+        $this->assertFalse(
+            $this->router->match('/application/admin/edit/id/3/name/teste/age/50/phone/555')
+        );
+    }
 
     public function testGetMatchedRouteMustReturnTheMatchedRoute()
     {

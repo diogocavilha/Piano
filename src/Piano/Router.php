@@ -89,6 +89,49 @@ class Router
 
             return false;
         }
+
+        $urlPieces = explode('/', $url);
+        foreach ($this->routes as $routeName => $route) {
+            if (
+                count($urlPieces) == 4
+                && $route['module'] == $urlPieces[1]
+                && $route['controller'] == $urlPieces[2]
+                && $route['action'] == $urlPieces[3]
+            ) {
+                unset($route['route'], $route[0]);
+                $this->matchedRoute = $route;
+                return true;
+            }
+
+            if (
+                count($urlPieces) > 4
+                && $route['module'] == $urlPieces[1]
+                && $route['controller'] == $urlPieces[2]
+                && $route['action'] == $urlPieces[3]
+            ) {
+                unset($urlPieces[0], $urlPieces[1], $urlPieces[2], $urlPieces[3]);
+                $params = [];
+                foreach ($urlPieces as $key => $var) {
+                    if ($key % 2 == 0) {
+                        $params[$var] = $urlPieces[$key + 1] ?? '';
+                    }
+                }
+
+                foreach ($params as $var => $value) {
+                    $routeVar = ':' . $var;
+                    if (
+                        !array_key_exists($routeVar, $route[0])
+                        || preg_match('#^' . $route[0][$routeVar] . '$#', $value) === 0
+                    ) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getUrl(string $name, array $params = null) : string
