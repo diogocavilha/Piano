@@ -408,6 +408,7 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->assertFalse(
             $this->router->match('/application/admin/edit/id/3/name/teste/age/50/phone/555')
         );
+        $this->assertFalse($this->router->match('/application/index'));
     }
 
     public function testGetMatchedRouteMustReturnTheMatchedRouteWhenSearchEngineFriendlyIsEnabled()
