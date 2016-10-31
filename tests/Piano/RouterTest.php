@@ -399,8 +399,10 @@ class RouterTest extends PHPUnit_Framework_Testcase
         );
     }
 
-    public function testGetMatchedRouteMustReturnTheMatchedRoute()
+    public function testGetMatchedRouteMustReturnTheMatchedRouteWhenSearchEngineFriendlyIsEnabled()
     {
+        $this->router->enableSearchEngineFriendly(true);
+
         $this->assertTrue(
             method_exists($this->router, 'getMatchedRoute'),
             'Method "getMatchedRoute()" must exist'
@@ -430,10 +432,15 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->assertArrayHasKey('module', $matchedRoute);
         $this->assertArrayHasKey('controller', $matchedRoute);
         $this->assertArrayHasKey('action', $matchedRoute);
+        $this->assertEquals('application', $matchedRoute['module']);
+        $this->assertEquals('admin', $matchedRoute['controller']);
+        $this->assertEquals('edit', $matchedRoute['action']);
     }
 
-    public function testGetMatchedRouteParamsMustReturnAllMatchedRouteParams()
+    public function testGetMatchedRouteParamsMustReturnAllMatchedRouteParamsWhenSearchEngineFriendlyIsEnabled()
     {
+        $this->router->enableSearchEngineFriendly(true);
+
         $this->assertTrue(
             method_exists($this->router, 'getMatchedRouteParams'),
             'Method "getMatchedRouteParams()" must exist'
