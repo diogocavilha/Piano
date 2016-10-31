@@ -59,78 +59,29 @@ class Router
         return $this->matchedRouteParams;
     }
 
-    public function match(string $url) : bool
+    private function matchUrlWithSearchEngineFriendlyEnabled(string $url) : bool
     {
-        if ($this->isSearchEngineFriendly()) {
-            $urlPieces = explode('/', $url);
-            foreach ($this->routes as $routeName => $route) {
-                $currentUrlPiecesPattern = [];
-                $currentUrlParams = [];
-                $routePieces = explode('/', $route['route']);
-                foreach ($routePieces as $pos => $segment) {
-                    if (substr($segment, 0, 1) == $this->urlVar) {
-                        $varName = substr($segment, 1);
-                        $currentUrlParams[$varName] = $urlPieces[$pos];
-                        $currentUrlPiecesPattern[$pos] = $route[0][$segment];
-                        continue;
-                    }
-
-                    $currentUrlPiecesPattern[$pos] = $segment;
-                }
-
-                $currentUrlPattern = implode('/', $currentUrlPiecesPattern);
-                if (preg_match('#^' . $currentUrlPattern . '$#', $url)) {
-                    unset($route['route'], $route[0]);
-                    $this->matchedRoute = $route;
-                    $this->matchedRouteParams = $currentUrlParams;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         $urlPieces = explode('/', $url);
         foreach ($this->routes as $routeName => $route) {
-            if (
-                count($urlPieces) == 4
-                && $route['module'] == $urlPieces[1]
-                && $route['controller'] == $urlPieces[2]
-                && $route['action'] == $urlPieces[3]
-            ) {
-                unset($route['route'], $route[0]);
-                $this->matchedRoute = $route;
-                return true;
+            $currentUrlPiecesPattern = [];
+            $currentUrlParams = [];
+            $routePieces = explode('/', $route['route']);
+            foreach ($routePieces as $pos => $segment) {
+                if (substr($segment, 0, 1) == $this->urlVar) {
+                    $varName = substr($segment, 1);
+                    $currentUrlParams[$varName] = $urlPieces[$pos];
+                    $currentUrlPiecesPattern[$pos] = $route[0][$segment];
+                    continue;
+                }
+
+                $currentUrlPiecesPattern[$pos] = $segment;
             }
 
-            if (
-                count($urlPieces) > 4
-                && $route['module'] == $urlPieces[1]
-                && $route['controller'] == $urlPieces[2]
-                && $route['action'] == $urlPieces[3]
-            ) {
-                unset($urlPieces[0], $urlPieces[1], $urlPieces[2], $urlPieces[3]);
-                $params = [];
-                foreach ($urlPieces as $key => $var) {
-                    if ($key % 2 == 0) {
-                        $params[$var] = $urlPieces[$key + 1] ?? '';
-                    }
-                }
-
-                foreach ($params as $var => $value) {
-                    $routeVar = ':' . $var;
-                    if (
-                        !array_key_exists($routeVar, $route[0])
-                        || preg_match('#^' . $route[0][$routeVar] . '$#', $value) === 0
-                    ) {
-                        return false;
-                    }
-                }
-
+            $currentUrlPattern = implode('/', $currentUrlPiecesPattern);
+            if (preg_match('#^' . $currentUrlPattern . '$#', $url)) {
                 unset($route['route'], $route[0]);
                 $this->matchedRoute = $route;
-                $this->matchedRouteParams = $params;
-
+                $this->matchedRouteParams = $currentUrlParams;
                 return true;
             }
         }
@@ -138,16 +89,72 @@ class Router
         return false;
     }
 
+    private function matchUrlWithSearchEngineFriendlyDisabled(string $url) : bool
+    {
+        $urlPieces = explode('/', $url);
+        if (count($urlPieces) < 4) {
+            return false;
+        }
+
+        foreach ($this->routes as $routeName => $route) {
+            if (count($urlPieces) >= 4
+                && ($route['module'] != $urlPieces[1]
+                || $route['controller'] != $urlPieces[2]
+                || $route['action'] != $urlPieces[3])) {
+                continue;
+            }
+
+            if (count($urlPieces) == 4) {
+                unset($route['route'], $route[0]);
+                $this->matchedRoute = $route;
+                return true;
+            }
+
+            unset($urlPieces[0], $urlPieces[1], $urlPieces[2], $urlPieces[3]);
+            $params = [];
+            foreach ($urlPieces as $key => $var) {
+                if ($key % 2 == 0) {
+                    $params[$var] = $urlPieces[$key + 1] ?? '';
+                }
+            }
+
+            foreach ($params as $var => $value) {
+                $routeVar = ':' . $var;
+                if (!array_key_exists($routeVar, $route[0])
+                    || preg_match('#^' . $route[0][$routeVar] . '$#', $value) === 0) {
+                    return false;
+                }
+            }
+
+            unset($route['route'], $route[0]);
+            $this->matchedRoute = $route;
+            $this->matchedRouteParams = $params;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public function match(string $url) : bool
+    {
+        if ($this->isSearchEngineFriendly()) {
+            return $this->matchUrlWithSearchEngineFriendlyEnabled($url);
+        }
+
+        return $this->matchUrlWithSearchEngineFriendlyDisabled($url);
+    }
+
     public function getUrl(string $name, array $params = null) : string
     {
         if ($this->isSearchEngineFriendly()) {
-            return $this->getFriendlyUrlForRoute($name, $params);
+            return $this->getUrlWithSEF($name, $params);
         }
 
-        return $this->getUrlForRoute($name, $params);
+        return $this->getUrlWithNoSEF($name, $params);
     }
 
-    private function getFriendlyUrlForRoute(string $name, array $params = null) : string
+    private function getUrlWithSEF(string $name, array $params = null) : string
     {
         // URL with no parameters
         $route = $this->getRoute($name);
@@ -178,7 +185,7 @@ class Router
         return $url;
     }
 
-    private function getUrlForRoute(string $name, array $params = null) : string
+    private function getUrlWithNoSEF(string $name, array $params = null) : string
     {
         // URL with no parameters
         $route = $this->getRoute($name);
@@ -219,7 +226,7 @@ class Router
 
     public function isSearchEngineFriendly()
     {
-        return $this->searchEngineFriendly;
+        return (bool) $this->searchEngineFriendly;
     }
 
     private function validateConfig(string $routeName, array $config)
