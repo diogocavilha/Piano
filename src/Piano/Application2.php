@@ -108,4 +108,100 @@ class Application2
 
         return;
     }
+
+    public function redirect(string $urlPath, array $args = [])
+    {
+        $router = $this->getDi()['router'];
+
+        $route = $router->getRoute($urlPath);
+
+        if (!is_null($route) && $router->isSearchEngineFriendly()) {
+            $url = sprintf('//%s%s', $_SERVER['HTTP_HOST'], $route['route']);
+            $this->header("Location: $url");
+            return;
+        }
+
+        if (!is_null($route) && !$router->isSearchEngineFriendly()) {
+            $url = sprintf(
+                '//%s/%s/%s/%s',
+                $_SERVER['HTTP_HOST'],
+                $route['module'],
+                $route['controller'],
+                $route['action']
+            );
+            $this->header("Location: $url");
+            return;
+        }
+
+        // if (empty($urlPath)) {
+        //     throw new \InvalidArgumentException('Param url is expected.');
+        // }
+
+        // $arrayUrl = explode('/', $urlPath);
+
+        // if (count($arrayUrl) <= 3) {
+        //     return $this->dispatchRouteDefault();
+        // }
+
+        // $this->moduleName = $arrayUrl[1];
+        // $this->controllerName = ucfirst($arrayUrl[2]) . 'Controller';
+        // $this->actionName = $arrayUrl[3];
+
+        // $module = $arrayUrl[1];
+        // $controller = $arrayUrl[2];
+        // $action = $arrayUrl[3];
+
+        // unset($arrayUrl[0], $arrayUrl[1], $arrayUrl[2], $arrayUrl[3]);
+
+        // if ($router->isSearchEngineFriendly()) {
+        //     if (is_null($args)) {
+        //         $args = [];
+        //         foreach ($arrayUrl as $key => $value) {
+        //             if ($key % 2 == 0) {
+        //                 $args[$value] = $arrayUrl[$key + 1] ?? '';
+        //             }
+        //         }
+        //     }
+
+        //     $this->urlParams = $args;
+
+        //     $allRoutes = $router->getRoutes();
+
+        //     foreach ($allRoutes as $route) {
+        //         if ($route['module'] == $module && $route['controller'] == $controller && $route['action'] == $action) {
+        //             $friendlyUrl = $route['route'];
+        //             $slashParams = $this->getSlashUrlParams($args);
+
+        //             $this->header("Location: //{$_SERVER['HTTP_HOST']}{$friendlyUrl}{$slashParams}");
+
+        //             return;
+        //         }
+        //     }
+        // }
+
+        // $this->urlParams = $args;
+        // $slashParams = $this->getSlashUrlParams($args);
+
+        // $this->header("Location: //{$_SERVER['HTTP_HOST']}{$urlPath}{$slashParams}");
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function header(string $location)
+    {
+        header($location);
+    }
+
+    private function getSlashUrlParams($args)
+    {
+        $slashParams = '';
+        if (!is_null($args) && count($args) > 0) {
+            foreach ($args as $key => $value) {
+                $slashParams .= '/'. $key . '/' . $value;
+            }
+        }
+
+        return $slashParams;
+    }
 }

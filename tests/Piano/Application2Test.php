@@ -140,6 +140,40 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
     }
 
+    public function testItMustRedirectToUrlWithSearchEngineFriendlyEnabledAndNoParameters()
+    {
+        $_SERVER['SERVER_PROTOCOL'] = 'http';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+
+        $di = $this->getTestingContainer($sef = true);
+        $class = $this->getMockBuilder('Piano\Application2')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $class->expects($this->once())
+            ->method('header');
+
+        $class->redirect('defaultAdmin');
+    }
+
+    public function testItMustRedirectToUrlWithSearchEngineFriendlyDisabledAndNoParameters()
+    {
+        $_SERVER['SERVER_PROTOCOL'] = 'http';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+
+        $di = $this->getTestingContainer($sef = false);
+        $class = $this->getMockBuilder('Piano\Application2')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $class->expects($this->once())
+            ->method('header');
+
+        $class->redirect('defaultAdmin');
+    }
+
     private function getTestingContainer($searchEngineFriendly = true)
     {
         $container = new Container();
