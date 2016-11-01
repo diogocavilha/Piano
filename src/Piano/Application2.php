@@ -140,6 +140,12 @@ class Application2
             $currentUrlPiecesPattern = [];
             $url = [];
             foreach ($routePieces as $pos => $segment) {
+                if ($router->isVar($segment) && !isset($args[$router->getVar()])) {
+                    $url = sprintf('Location: //%s%s', $_SERVER['HTTP_HOST'], '/');
+                    $this->header($url);
+                    return;
+                }
+
                 if ($router->isVar($segment)) {
                     $currentUrlPiecesPattern[$pos] = $route[0][$segment];
                     $url[] = $args[$router->getVar()];
@@ -147,7 +153,6 @@ class Application2
                 }
 
                 $url[] = $segment;
-
                 $currentUrlPiecesPattern[$pos] = $segment;
             }
 

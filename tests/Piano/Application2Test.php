@@ -203,6 +203,23 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $class->redirect('userEdit', $params);
     }
 
+    public function testItMustRedirectToDefaultUrlWithSearchEngineFriendlyEnabledAndParameters()
+    {
+        $_SERVER['HTTP_HOST'] = 'localhost';
+
+        $di = $this->getTestingContainer($sef = true);
+        $class = $this->getMockBuilder('Piano\Application2')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $class->expects($this->once())
+            ->method('header');
+
+        $params = ['_id' => 5];
+        $class->redirect('userEdit', $params);
+    }
+
     private function getTestingContainer($searchEngineFriendly = true)
     {
         $container = new Container();
