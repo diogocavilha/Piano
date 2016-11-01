@@ -555,6 +555,36 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->assertEquals('TestName', $routeParams['name']);
     }
 
+    public function testItCanCheckIfAStringIsAnUrlVariableAndReturnTrueCaseItIs()
+    {
+        $this->assertTrue(
+            method_exists($this->router, 'isVar'),
+            'Method "isVar()" must exist'
+        );
+
+        $response = $this->router->isVar(':test');
+        $this->assertTrue($response, 'Response must return "true"');
+    }
+
+    public function testItCanCheckIfAStringIsAnUrlVariableAndReturnFalseCaseItIsNot()
+    {
+        $this->assertTrue(
+            method_exists($this->router, 'isVar'),
+            'Method "isVar()" must exist'
+        );
+
+        $response = $this->router->isVar('test');
+        $this->assertFalse($response, 'Response must return "false"');
+    }
+
+    public function testItCanReturnTheVarName()
+    {
+        $this->assertTrue(
+            method_exists($this->router, 'getVar'),
+            'Method "getVar()" must exist'
+        );
+    }
+
     private function getRoutes()
     {
         return $routes = [
