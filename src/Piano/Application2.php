@@ -109,19 +109,21 @@ class Application2
         return;
     }
 
-    public function redirect(string $urlPath, array $args = [])
+    public function redirect(string $urlPath = '', array $args = [])
     {
+        if (empty($urlPath)) {
+            throw new \InvalidArgumentException('Param url is expected.');
+        }
+
         $router = $this->getDi()['router'];
-
         $route = $router->getRoute($urlPath);
-
-        if (!is_null($route) && $router->isSearchEngineFriendly()) {
+        if (!is_null($route) && $router->isSearchEngineFriendly() && empty($args)) {
             $url = sprintf('//%s%s', $_SERVER['HTTP_HOST'], $route['route']);
             $this->header("Location: $url");
             return;
         }
 
-        if (!is_null($route) && !$router->isSearchEngineFriendly()) {
+        if (!is_null($route) && !$router->isSearchEngineFriendly() && empty($args)) {
             $url = sprintf(
                 '//%s/%s/%s/%s',
                 $_SERVER['HTTP_HOST'],
@@ -133,9 +135,30 @@ class Application2
             return;
         }
 
-        // if (empty($urlPath)) {
-        //     throw new \InvalidArgumentException('Param url is expected.');
-        // }
+        if (!is_null($route) && $router->isSearchEngineFriendly() && !empty($args)) {
+            $routePieces = explode('/', $route['route']);
+            $currentUrlPiecesPattern = [];
+            $url = [];
+            foreach ($routePieces as $pos => $segment) {
+                if (substr($segment, 0, 1) == ':') {
+                    $varName = substr($segment, 1);
+                    $currentUrlPiecesPattern[$pos] = $route[0][$segment];
+                    $url[] = $args[$varName];
+                    continue;
+                }
+
+                $url[] = $segment;
+
+                $currentUrlPiecesPattern[$pos] = $segment;
+            }
+
+            $currentUrlPattern = implode('/', $currentUrlPiecesPattern);
+            $url = implode('/', $url);
+            $url = sprintf('//%s%s', $_SERVER['HTTP_HOST'], $url);
+            $this->header("Location: $url");
+            return;
+        }
+
 
         // $arrayUrl = explode('/', $urlPath);
 

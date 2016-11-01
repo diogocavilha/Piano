@@ -140,9 +140,22 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Param url is expected.
+     */
+    public function testRedirectMustThrowAnInvalidArgumentExceptionWhenNoParametersArePassed()
+    {
+        $this->assertTrue(
+            method_exists($this->class, 'redirect'),
+            'Method "redirect()" must exist'
+        );
+
+        $this->class->redirect();
+    }
+
     public function testItMustRedirectToUrlWithSearchEngineFriendlyEnabledAndNoParameters()
     {
-        $_SERVER['SERVER_PROTOCOL'] = 'http';
         $_SERVER['HTTP_HOST'] = 'localhost';
 
         $di = $this->getTestingContainer($sef = true);
@@ -159,7 +172,6 @@ class Application2Test extends PHPUnit_Framework_TestCase
 
     public function testItMustRedirectToUrlWithSearchEngineFriendlyDisabledAndNoParameters()
     {
-        $_SERVER['SERVER_PROTOCOL'] = 'http';
         $_SERVER['HTTP_HOST'] = 'localhost';
 
         $di = $this->getTestingContainer($sef = false);
@@ -172,6 +184,23 @@ class Application2Test extends PHPUnit_Framework_TestCase
             ->method('header');
 
         $class->redirect('defaultAdmin');
+    }
+
+    public function testItMustRedirectToUrlWithSearchEngineFriendlyEnabledAndParameters()
+    {
+        $_SERVER['HTTP_HOST'] = 'localhost';
+
+        $di = $this->getTestingContainer($sef = true);
+        $class = $this->getMockBuilder('Piano\Application2')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $class->expects($this->once())
+            ->method('header');
+
+        $params = ['id' => 5];
+        $class->redirect('userEdit', $params);
     }
 
     private function getTestingContainer($searchEngineFriendly = true)
