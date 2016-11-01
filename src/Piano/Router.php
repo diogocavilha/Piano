@@ -10,6 +10,7 @@ namespace Piano;
 class Router
 {
     private $urlVar = ':';
+    private $varName = '';
     private $routes = [];
     private $matchedRoute = [];
     private $matchedRouteParams = [];
@@ -67,9 +68,8 @@ class Router
             $currentUrlParams = [];
             $routePieces = explode('/', $route['route']);
             foreach ($routePieces as $pos => $segment) {
-                if (substr($segment, 0, 1) == $this->urlVar) {
-                    $varName = substr($segment, 1);
-                    $currentUrlParams[$varName] = $urlPieces[$pos];
+                if ($this->isVar($segment)) {
+                    $currentUrlParams[$this->getVar()] = $urlPieces[$pos];
                     $currentUrlPiecesPattern[$pos] = $route[0][$segment];
                     continue;
                 }
@@ -181,9 +181,10 @@ class Router
         // $urlRegex = $url;
 
         foreach ($params as $key => $value) {
-            if ($k = array_search($this->urlVar . $key, $url)) {
+            $var = ':' . $key;
+            if ($k = array_search($var, $url)) {
                 $url[$k] = $value;
-                // $urlRegex[$k] = $arrayUrlParams[$this->urlVar . $key];
+                // $urlRegex[$k] = $arrayUrlParams[$var];
             }
         }
 
@@ -263,5 +264,20 @@ class Router
                 sprintf('Route %s must have a valid action configuration.', $routeName)
             );
         }
+    }
+
+    public function isVar(string $name) : bool
+    {
+        if (substr($name, 0, 1) == ':') {
+            $this->varName = substr($name, 1);
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getVar() : string
+    {
+        return $this->varName;
     }
 }

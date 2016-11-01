@@ -140,10 +140,9 @@ class Application2
             $currentUrlPiecesPattern = [];
             $url = [];
             foreach ($routePieces as $pos => $segment) {
-                if (substr($segment, 0, 1) == ':') {
-                    $varName = substr($segment, 1);
+                if ($router->isVar($segment)) {
                     $currentUrlPiecesPattern[$pos] = $route[0][$segment];
-                    $url[] = $args[$varName];
+                    $url[] = $args[$router->getVar()];
                     continue;
                 }
 
