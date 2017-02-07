@@ -170,22 +170,6 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $class->redirect('defaultAdmin');
     }
 
-    public function testItMustRedirectToUrlWithSearchEngineFriendlyDisabledAndNoParameters()
-    {
-        $_SERVER['HTTP_HOST'] = 'localhost';
-
-        $di = $this->getTestingContainer($sef = false);
-        $class = $this->getMockBuilder('Piano\Application2')
-            ->setConstructorArgs([$di])
-            ->setMethods(['header'])
-            ->getMock();
-
-        $class->expects($this->once())
-            ->method('header');
-
-        $class->redirect('defaultAdmin');
-    }
-
     public function testItMustRedirectToUrlWithSearchEngineFriendlyEnabledAndParameters()
     {
         $_SERVER['HTTP_HOST'] = 'localhost';
@@ -203,7 +187,28 @@ class Application2Test extends PHPUnit_Framework_TestCase
         $class->redirect('userEdit', $params);
     }
 
-    public function testItMustRedirectToDefaultUrlWithSearchEngineFriendlyEnabledAndParameters()
+    public function testItMustRedirectToUrlWithSearchEngineFriendlyDisabledAndNoParameters()
+    {
+        $_SERVER['HTTP_HOST'] = 'localhost';
+
+        $di = $this->getTestingContainer($sef = false);
+        $class = $this->getMockBuilder('Piano\Application2')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $class->expects($this->once())
+            ->method('header');
+
+        $class->redirect('defaultAdmin');
+    }
+
+    public function testItMustRedirectToUrlWithSearchEngineFriendlyDisabledAndParameters()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testItMustRedirectToDefaultUrlWithSearchEngineFriendlyEnabledAndWrongParameterNames()
     {
         $_SERVER['HTTP_HOST'] = 'localhost';
 

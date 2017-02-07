@@ -123,18 +123,6 @@ class Application2
             return;
         }
 
-        if (!is_null($route) && !$router->isSearchEngineFriendly() && empty($args)) {
-            $url = sprintf(
-                '//%s/%s/%s/%s',
-                $_SERVER['HTTP_HOST'],
-                $route['module'],
-                $route['controller'],
-                $route['action']
-            );
-            $this->header("Location: $url");
-            return;
-        }
-
         if (!is_null($route) && $router->isSearchEngineFriendly() && !empty($args)) {
             $routePieces = explode('/', $route['route']);
             $currentUrlPiecesPattern = [];
@@ -163,6 +151,17 @@ class Application2
             return;
         }
 
+        if (!is_null($route) && !$router->isSearchEngineFriendly() && empty($args)) {
+            $url = sprintf(
+                '//%s/%s/%s/%s',
+                $_SERVER['HTTP_HOST'],
+                $route['module'],
+                $route['controller'],
+                $route['action']
+            );
+            $this->header("Location: $url");
+            return;
+        }
 
         // $arrayUrl = explode('/', $urlPath);
 
