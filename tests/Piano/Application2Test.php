@@ -165,7 +165,8 @@ class Application2Test extends PHPUnit_Framework_TestCase
             ->getMock();
 
         $class->expects($this->once())
-            ->method('header');
+            ->method('header')
+            ->with($this->identicalTo('Location: //localhost/admin'));
 
         $class->redirect('defaultAdmin');
     }
@@ -181,7 +182,8 @@ class Application2Test extends PHPUnit_Framework_TestCase
             ->getMock();
 
         $class->expects($this->once())
-            ->method('header');
+            ->method('header')
+            ->with($this->identicalTo('Location: //localhost/users/5'));
 
         $params = ['id' => 5];
         $class->redirect('userEdit', $params);
@@ -198,14 +200,28 @@ class Application2Test extends PHPUnit_Framework_TestCase
             ->getMock();
 
         $class->expects($this->once())
-            ->method('header');
+            ->method('header')
+            ->with($this->identicalTo('Location: //localhost/admin/index/index'));
 
         $class->redirect('defaultAdmin');
     }
 
     public function testItMustRedirectToUrlWithSearchEngineFriendlyDisabledAndParameters()
     {
-        $this->markTestIncomplete();
+        $_SERVER['HTTP_HOST'] = 'localhost';
+
+        $di = $this->getTestingContainer($sef = false);
+        $class = $this->getMockBuilder('Piano\Application2')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $class->expects($this->once())
+            ->method('header')
+            ->with($this->identicalTo('Location: //localhost/application/user/edit/id/5'));
+
+        $params = ['id' => 5];
+        $class->redirect('userEdit', $params);
     }
 
     public function testItMustRedirectToDefaultUrlWithSearchEngineFriendlyEnabledAndWrongParameterNames()
@@ -219,7 +235,8 @@ class Application2Test extends PHPUnit_Framework_TestCase
             ->getMock();
 
         $class->expects($this->once())
-            ->method('header');
+            ->method('header')
+            ->with($this->identicalTo('Location: //localhost/'));
 
         $params = ['_id' => 5];
         $class->redirect('userEdit', $params);

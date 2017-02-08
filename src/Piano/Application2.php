@@ -125,7 +125,7 @@ class Application2
 
         if (!is_null($route) && $router->isSearchEngineFriendly() && !empty($args)) {
             $routePieces = explode('/', $route['route']);
-            $currentUrlPiecesPattern = [];
+            $urlPattern = [];
             $url = [];
             foreach ($routePieces as $pos => $segment) {
                 if ($router->isVar($segment) && !isset($args[$router->getVar()])) {
@@ -135,16 +135,16 @@ class Application2
                 }
 
                 if ($router->isVar($segment)) {
-                    $currentUrlPiecesPattern[$pos] = $route[0][$segment];
+                    $urlPattern[$pos] = $route[0][$segment];
                     $url[] = $args[$router->getVar()];
                     continue;
                 }
 
                 $url[] = $segment;
-                $currentUrlPiecesPattern[$pos] = $segment;
+                $urlPattern[$pos] = $segment;
             }
 
-            $currentUrlPattern = implode('/', $currentUrlPiecesPattern);
+            $urlPattern = implode('/', $urlPattern);
             $url = implode('/', $url);
             $url = sprintf('//%s%s', $_SERVER['HTTP_HOST'], $url);
             $this->header("Location: $url");
@@ -163,52 +163,38 @@ class Application2
             return;
         }
 
-        // $arrayUrl = explode('/', $urlPath);
+        if (!is_null($route) && !$router->isSearchEngineFriendly() && !empty($args)) {
+            $routePieces = explode('/', $route['route']);
 
-        // if (count($arrayUrl) <= 3) {
-        //     return $this->dispatchRouteDefault();
-        // }
+            $url = $urlPattern = [
+                $_SERVER['HTTP_HOST'],
+                $route['module'],
+                $route['controller'],
+                $route['action']
+            ];
 
-        // $this->moduleName = $arrayUrl[1];
-        // $this->controllerName = ucfirst($arrayUrl[2]) . 'Controller';
-        // $this->actionName = $arrayUrl[3];
+            foreach ($routePieces as $pos => $segment) {
+                if ($router->isVar($segment) && !isset($args[$router->getVar()])) {
+                    $url = sprintf('Location: //%s%s', $_SERVER['HTTP_HOST'], '/');
+                    $this->header($url);
+                    return;
+                }
 
-        // $module = $arrayUrl[1];
-        // $controller = $arrayUrl[2];
-        // $action = $arrayUrl[3];
+                if ($router->isVar($segment)) {
+                    $urlPattern[] = $router->getVar();
+                    $urlPattern[] = $route[0][$segment];
+                    $url[] = $router->getVar();
+                    $url[] = $args[$router->getVar()];
+                    continue;
+                }
+            }
 
-        // unset($arrayUrl[0], $arrayUrl[1], $arrayUrl[2], $arrayUrl[3]);
+            $urlPattern = '//' . implode('/', $urlPattern);
+            $url = '//' . implode('/', $url);
 
-        // if ($router->isSearchEngineFriendly()) {
-        //     if (is_null($args)) {
-        //         $args = [];
-        //         foreach ($arrayUrl as $key => $value) {
-        //             if ($key % 2 == 0) {
-        //                 $args[$value] = $arrayUrl[$key + 1] ?? '';
-        //             }
-        //         }
-        //     }
-
-        //     $this->urlParams = $args;
-
-        //     $allRoutes = $router->getRoutes();
-
-        //     foreach ($allRoutes as $route) {
-        //         if ($route['module'] == $module && $route['controller'] == $controller && $route['action'] == $action) {
-        //             $friendlyUrl = $route['route'];
-        //             $slashParams = $this->getSlashUrlParams($args);
-
-        //             $this->header("Location: //{$_SERVER['HTTP_HOST']}{$friendlyUrl}{$slashParams}");
-
-        //             return;
-        //         }
-        //     }
-        // }
-
-        // $this->urlParams = $args;
-        // $slashParams = $this->getSlashUrlParams($args);
-
-        // $this->header("Location: //{$_SERVER['HTTP_HOST']}{$urlPath}{$slashParams}");
+            $this->header("Location: $url");
+            return;
+        }
     }
 
     /**
