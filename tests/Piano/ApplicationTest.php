@@ -1,229 +1,310 @@
 <?php
 
+use Piano\Application;
+use Piano\Container;
+
+/**
+ * @group php7
+ */
 class ApplicationTest extends PHPUnit_Framework_TestCase
 {
-    private $app;
+    private $class;
 
     public function setUp()
     {
-        $_SERVER['REQUEST_URI'] = '/';
+        $di = $this->getTestingContainer();
 
-        $config = $this->getConfig();
-        $router = $this->getRouter();
-        $router->enableSearchEngineFriendly();
-
-        $this->app = new Piano\Application($config, $router);
+        $this->class = new Application($di);
     }
 
-    public function testShouldBeInstanceOfPianoApplication()
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Key "config" is missing
+     */
+    public function testItMustThrowRuntimeExceptionWhenContainerDoesNotHaveAConfigKey()
     {
-        $this->assertInstanceOf(get_class($this->app), $this->app);
+        $container = new Container();
+
+        new Application($container);
     }
 
-    public function testSetUrlWithNoSearchEngineFriendlyShouldWork()
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Key "router" is missing
+     */
+    public function testItMustThrowRuntimeExceptionWhenContainerDoesNotHaveARouterKey()
     {
-        $router = $this->getRouter();
-        $router->enableSearchEngineFriendly(true);
-        $app = new Piano\Application($this->getConfig(), $router);
+        $container = new Container();
+        $container['config'] = function () {};
 
-        $app->setUrl();
-        $app->setUrl('/');
-        $app->setUrl('default');
-        $app->setUrl('/this/route');
-        $app->setUrl('/application/index/index');
-        $app->setUrl('/application/index/index/id/2');
-        $app->setUrl('/admin/index/index');
-
-        $router->enableSearchEngineFriendly(false);
-        $app = new Piano\Application($this->getConfig(), $router);
-        $app->setUrl();
-        $app->setUrl('/');
-        $app->setUrl('default');
-        $app->setUrl('/this/route');
-        $app->setUrl('/application/index/index');
-        $app->setUrl('/application/index/index/id/2');
-        $app->setUrl('/admin/index/index');
+        new Application($container);
     }
 
-    public function testGetApplicationFolderNameShouldWork()
+    public function testItMustSetTheDIContainerOnConstructor()
     {
-        $router = $this->getRouter();
-        $config = $this->getConfig();
-        // $config->setApplicationFolder('appFolder');
-        $app = new Piano\Application($config, $router);
+        $this->assertTrue(
+            method_exists($this->class, 'getDi'),
+            'Method "getDi()" must exist'
+        );
 
-        $this->assertEquals('Piano', $app->getApplicationFolderName());
+        $container = $this->class->getDi();
+
+        $this->assertInstanceOf('\Piano\Container', $container);
+        $this->assertInstanceOf('\Pimple\Container', $container);
     }
 
-    public function testGetConfigShouldReturnInstanceOfPianoConfig()
+    public function testGetApplicationFolderNameMustReturnTheSetupFolderName()
     {
-        $this->assertInstanceOf('Piano\Config\Ini', $this->app->getConfig());
+        $this->assertTrue(
+            method_exists($this->class, 'getApplicationFolderName'),
+            'Method "getApplicationFolderName()" must exist'
+        );
+
+        $this->assertEquals('Piano', $this->class->getApplicationFolderName());
     }
 
-    public function testGetRouterShouldWork()
+    public function testGetDefaultModuleNameMustReturnTheSetupDefaultModuleName()
     {
-        $this->assertInstanceOf('Piano\Router', $this->app->getRouter());
+        $this->assertTrue(
+            method_exists($this->class, 'getDefaultModuleName'),
+            'Method "getDefaultModuleName()" must exist'
+        );
+
+        $this->assertEquals('authentication', $this->class->getDefaultModuleName());
     }
 
-    public function testGetDefaultModuleNameShouldWork()
+    public function testItMustSetupTheModuleControllerActionWhenSearchEngineFriendlyIsEnabledAndNotInformedUrl()
     {
-        $this->assertEquals('authentication', $this->app->getDefaultModuleName());
+        $di = $this->getTestingContainer($sef = true);
+        $class = new Application($di);
+
+        $this->assertTrue(
+            method_exists($class, 'getModuleName'),
+            'Method "getModuleName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getControllerName'),
+            'Method "getControllerName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getActionName'),
+            'Method "getActionName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'setUrl'),
+            'Method "setUrl()" must exist'
+        );
+
+        $_SERVER['REQUEST_URI'] = 'http://thatstest.com/route/doesnot/exit';
+        $class->setUrl();
+        $this->assertEquals('application', $class->getModuleName());
+        $this->assertEquals('ErrorController', $class->getControllerName());
+        $this->assertEquals('error', $class->getActionName());
+        $this->assertInternalType('array', $class->getParams());
+        $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
     }
 
-    public function testGetModuleNameShouldWork()
+    public function testItMustSetupTheModuleControllerActionWhenSearchEngineFriendlyIsEnabledAndUrlIsRoot()
     {
-        $router = $this->getRouter();
-        $router->enableSearchEngineFriendly(false);
-        $app = new Piano\Application($this->getConfig(), $router);
+        $di = $this->getTestingContainer($sef = true);
+        $class = new Application($di);
 
-        $app->setUrl('/admin/index/index');
-        $this->assertEquals('admin', $app->getModuleName());
+        $this->assertTrue(
+            method_exists($class, 'getModuleName'),
+            'Method "getModuleName()" must exist'
+        );
 
-        $app->setUrl('/upload/index/index');
-        $this->assertEquals('upload', $app->getModuleName());
+        $this->assertTrue(
+            method_exists($class, 'getControllerName'),
+            'Method "getControllerName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'getActionName'),
+            'Method "getActionName()" must exist'
+        );
+
+        $this->assertTrue(
+            method_exists($class, 'setUrl'),
+            'Method "setUrl()" must exist'
+        );
+
+        $class->setUrl('/');
+        $this->assertEquals('application', $class->getModuleName());
+        $this->assertEquals('IndexController', $class->getControllerName());
+        $this->assertEquals('index', $class->getActionName());
+        $this->assertInternalType('array', $class->getParams());
+        $this->assertEmpty($class->getParams(), 'Parameter must be an empty array');
     }
 
-    public function testGetControllerNameShouldWork()
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Param url is expected.
+     */
+    public function testRedirectMustThrowAnInvalidArgumentExceptionWhenNoParametersArePassed()
     {
-        $router = $this->getRouter();
-        $router->enableSearchEngineFriendly(false);
-        $app = new Piano\Application($this->getConfig(), $router);
+        $this->assertTrue(
+            method_exists($this->class, 'redirect'),
+            'Method "redirect()" must exist'
+        );
 
-        $app->setUrl('/admin/index/index');
-        $this->assertEquals('IndexController', $app->getControllerName());
-
-        $app->setUrl('/upload/image/index');
-        $this->assertEquals('ImageController', $app->getControllerName());
+        $this->class->redirect();
     }
 
-    public function testGetActionNameShouldWork()
+    public function testItMustRedirectToUrlWithSearchEngineFriendlyEnabledAndNoParameters()
     {
-        $router = $this->getRouter();
-        $router->enableSearchEngineFriendly(false);
-        $app = new Piano\Application($this->getConfig(), $router);
+        $_SERVER['HTTP_HOST'] = 'localhost';
 
-        $app->setUrl('/admin/index/index');
-        $this->assertEquals('index', $app->getActionName());
+        $di = $this->getTestingContainer($sef = true);
+        $class = $this->getMockBuilder('Piano\Application')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
 
-        $app->setUrl('/upload/image/add');
-        $this->assertEquals('add', $app->getActionName());
-    }
+        $class->expects($this->once())
+            ->method('header')
+            ->with($this->identicalTo('Location: //localhost/admin'));
 
-    public function testGetParamsShouldWork()
-    {
-        $router = $this->getRouter();
-        $router->enableSearchEngineFriendly(false);
-        $app = new Piano\Application($this->getConfig(), $router);
-
-        $app->setUrl('/admin/index/index');
-        $params = $app->getParams();
-        $this->assertInternalType('array', $params);
-        $this->assertEmpty($params);
-
-        $app->setUrl('/admin/index/index/id/5/value/teste');
-        $params = $app->getParams();
-        $this->assertInternalType('array', $params);
-        $this->assertArrayHasKey('id', $params);
-        $this->assertArrayHasKey('value', $params);
-        $this->assertEquals('5', $params['id']);
-        $this->assertEquals('teste', $params['value']);
-    }
-
-    public function testGetParamShouldWork()
-    {
-        $router = $this->getRouter();
-        $router->enableSearchEngineFriendly(false);
-        $app = new Piano\Application($this->getConfig(), $router);
-
-        $app->setUrl('/admin/index/index');
-        $this->assertFalse($app->getParam());
-
-        $app->setUrl('/admin/index/index/id/5/value/teste');
-        $this->assertFalse($app->getParam());
-        $this->assertEquals('5', $app->getParam('id'));
-        $this->assertEquals('teste', $app->getParam('value'));
+        $class->redirect('defaultAdmin');
     }
 
     /**
      * @expectedException Exception
      */
-    public function testGetParamShouldThrowAnException()
+    public function testItMustRedirectToDefaultUrlWithSearchEngineFriendlyEnabledAndWrongParameterNames()
     {
-        $this->app->getParam('key_does_not_exist');
+        $di = $this->getTestingContainer($sef = true);
+        $class = $this->getMockBuilder('Piano\Application')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $params = ['_id' => 5];
+        $class->redirect('userEdit', $params);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testRedirectShouldThrowAnInvalidArgumentException()
+    public function testItMustRedirectToUrlWithSearchEngineFriendlyEnabledAndParameters()
     {
-        $this->app->redirect();
-    }
-
-    /**
-     * @runInSeparateProcess
-     */
-    public function testRedirectShouldWork()
-    {
-        $_SERVER['SERVER_PROTOCOL'] = 'http';
         $_SERVER['HTTP_HOST'] = 'localhost';
 
-        $router = $this->getRouter();
-        $router->enableSearchEngineFriendly(false);
-        $app = new Piano\Application($this->getConfig(), $router);
-        $app->redirect('/application/index/index');
-        $app->redirect('/application/index/index', ['id' => 5, 'value' => 'teste']);
-        $app->redirect('/application');
-        $app->redirect('/');
+        $di = $this->getTestingContainer($sef = true);
+        $class = $this->getMockBuilder('Piano\Application')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $class->expects($this->once())
+            ->method('header')
+            ->with($this->identicalTo('Location: //localhost/users/5'));
+
+        $params = ['id' => 5];
+        $class->redirect('userEdit', $params);
     }
 
-    private function getRouter()
+    public function testItMustRedirectToUrlWithSearchEngineFriendlyDisabledAndNoParameters()
     {
-        $routes = [
-            'default' => [
-                'route' => '/',
-                'module' => 'application',
-                'controller' => 'index',
-                'action' => 'index'
-            ],
-            'defaultAdmin' => [
-                'route' => '/admin',
-                'module' => 'admin',
-                'controller' => 'index',
-                'action' => 'index'
-            ],
-            'user_edit' => [
-                'route' => '/users/:id',
-                'module' => 'application',
-                'controller' => 'user',
-                'action' => 'edit',
-                [
-                    ':id' => '\d+'
+        $_SERVER['HTTP_HOST'] = 'localhost';
+
+        $di = $this->getTestingContainer($sef = false);
+        $class = $this->getMockBuilder('Piano\Application')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $class->expects($this->once())
+            ->method('header')
+            ->with($this->identicalTo('Location: //localhost/admin/index/index'));
+
+        $class->redirect('defaultAdmin');
+    }
+
+    public function testItMustRedirectToUrlWithSearchEngineFriendlyDisabledAndParameters()
+    {
+        $_SERVER['HTTP_HOST'] = 'localhost';
+
+        $di = $this->getTestingContainer($sef = false);
+        $class = $this->getMockBuilder('Piano\Application')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $class->expects($this->once())
+            ->method('header')
+            ->with($this->identicalTo('Location: //localhost/application/user/edit/id/5'));
+
+        $params = ['id' => 5];
+        $class->redirect('userEdit', $params);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testItMustThrowAnExceptionWhenSearchEngineFriendlyDisabledAndNullParameterValues()
+    {
+        $di = $this->getTestingContainer($sef = false);
+        $class = $this->getMockBuilder('Piano\Application')
+            ->setConstructorArgs([$di])
+            ->setMethods(['header'])
+            ->getMock();
+
+        $params = ['id' => null];
+        $class->redirect('userEdit', $params);
+    }
+
+    private function getTestingContainer($searchEngineFriendly = true)
+    {
+        $container = new Container();
+        $container['config'] = function () {
+            return new \Piano\Config\Ini('tests/configTest.ini');
+        };
+
+        $container['router'] = function () use ($searchEngineFriendly) {
+            $routes = [
+                'default' => [
+                    'route' => '/',
+                    'module' => 'application',
+                    'controller' => 'index',
+                    'action' => 'index'
+                ],
+                'defaultAdmin' => [
+                    'route' => '/admin',
+                    'module' => 'admin',
+                    'controller' => 'index',
+                    'action' => 'index'
+                ],
+                'userEdit' => [
+                    'route' => '/users/:id',
+                    'module' => 'application',
+                    'controller' => 'user',
+                    'action' => 'edit',
+                    [
+                        ':id' => '\d+'
+                    ]
+                ],
+                'error404' => [
+                    'route' => '/error',
+                    'module' => 'application',
+                    'controller' => 'error',
+                    'action' => 'error',
+                ],
+                'redirect' => [
+                    'route' => '/redirect/contact',
+                    'module' => 'application',
+                    'controller' => 'index',
+                    'action' => 'redirectTest',
                 ]
-            ],
-            'error_404' => [
-                'route' => '/error',
-                'module' => 'application',
-                'controller' => 'error',
-                'action' => 'error',
-            ],
-            'redirect' => [
-                'route' => '/redirect/contact',
-                'module' => 'application',
-                'controller' => 'index',
-                'action' => 'redirectTest',
-            ]
-        ];
+            ];
 
-        $router = new Piano\Router();
-        $router->setRoutes($routes);
+            $router = new Piano\Router();
+            $router->setRoutes($routes);
+            $router->enableSearchEngineFriendly($searchEngineFriendly);
 
-        return $router;
-    }
+            return $router;
+        };
 
-    private function getConfig()
-    {
-        $config = new \Piano\Config\Ini('tests/configTest.ini');
-        return $config;
+        return $container;
     }
 }
