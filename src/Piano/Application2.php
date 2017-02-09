@@ -129,9 +129,7 @@ class Application2
             $url = [];
             foreach ($routePieces as $pos => $segment) {
                 if ($router->isVar($segment) && !isset($args[$router->getVar()])) {
-                    $url = sprintf('Location: //%s%s', $_SERVER['HTTP_HOST'], '/');
-                    $this->header($url);
-                    return;
+                    throw new \Exception('Invalid parameters');
                 }
 
                 if ($router->isVar($segment)) {
@@ -175,9 +173,7 @@ class Application2
 
             foreach ($routePieces as $pos => $segment) {
                 if ($router->isVar($segment) && !isset($args[$router->getVar()])) {
-                    $url = sprintf('Location: //%s%s', $_SERVER['HTTP_HOST'], '/');
-                    $this->header($url);
-                    return;
+                    throw new \Exception('Invalid parameters');
                 }
 
                 if ($router->isVar($segment)) {
@@ -203,17 +199,5 @@ class Application2
     protected function header(string $location)
     {
         header($location);
-    }
-
-    private function getSlashUrlParams($args)
-    {
-        $slashParams = '';
-        if (!is_null($args) && count($args) > 0) {
-            foreach ($args as $key => $value) {
-                $slashParams .= '/'. $key . '/' . $value;
-            }
-        }
-
-        return $slashParams;
     }
 }
