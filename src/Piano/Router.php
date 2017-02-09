@@ -203,7 +203,7 @@ class Router
         $arrayUrlParams = $route[0] ?? [];
 
         $url = sprintf(
-            '/%s/%s/%s/',
+            '/%s/%s/%s',
             $route['module'],
             $route['controller'],
             $route['action']
@@ -221,7 +221,7 @@ class Router
             $urlParamsRegex[] = substr($key, 1) . '/' . $arrayUrlParams[$key];
         }
 
-        $url .= implode('/', $urlParams);
+        $url .= '/' . implode('/', $urlParams);
 
         // TODO
         // $urlRegex .= implode('/', $urlParamsRegex);

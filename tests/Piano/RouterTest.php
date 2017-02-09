@@ -350,7 +350,7 @@ class RouterTest extends PHPUnit_Framework_Testcase
         $this->router->enableSearchEngineFriendly(false);
 
         $this->assertEquals(
-            '/application/index/index/',
+            '/application/index/index',
             $this->router->getUrl('default'),
             'URL must be "/application/index/index/"'
         );
