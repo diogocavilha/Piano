@@ -17,6 +17,7 @@ class View2Test extends PHPUnit_Framework_TestCase
 
         $di = $this->getTestingContainer($sef = true);
         $app = new Application($di);
+        $app->setUrl('/');
         $this->view = new View($app);
     }
 
@@ -175,6 +176,61 @@ class View2Test extends PHPUnit_Framework_TestCase
             ['Piano\Mvc\View2', null],
             ['Piano\Mvc\View2', ''],
         ];
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage View name is expected.
+     */
+    public function testRenderShouldThrowAnInvalidArgumentException()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'render'),
+            'Method "render()" must exist'
+        );
+
+        $this->view->render();
+    }
+
+    public function testGetCompleteViewPathShouldWork()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'getCompleteViewPath'),
+            'Method "getCompleteViewPath()" must exist'
+        );
+
+        $expected = '../src/Piano/layouts/menu.phtml';
+        $this->assertEquals($expected, $this->view->getCompleteViewPath('/layouts/menu'));
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Partial name is expected.
+     */
+    public function testPartialShouldThrowAnInvalidArgumentException()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'partial'),
+            'Method "partial()" must exist'
+        );
+
+        $this->view->partial();
+    }
+
+    /**
+     * @expectedException RuntimeException
+     * @expectedExceptionMessageRegExp Layout not found: \w+.
+     */
+    public function testPartialShouldThrowARuntimeException()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'render'),
+            'Method "render()" must exist'
+        );
+
+        $this->markTestIncomplete();
+
+        // $this->view->render('/teste');
     }
 
     private function getTestingContainer($searchEngineFriendly = true)

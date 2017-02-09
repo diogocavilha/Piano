@@ -15,7 +15,7 @@ class View2
     private $application;
 
     private $disableLayout = false;
-    // private $layout = null;
+    private $layout = null;
     private $jsFilesPath = [];
     private $cssFilesPath = [];
     private $vars = [];
@@ -40,56 +40,57 @@ class View2
         return $this->vars;
     }
 
-    // public function render($viewName = null, array $vars = null)
-    // {
-    //     if (is_null($viewName)) {
-    //         throw new \InvalidArgumentException('View name is expected.');
-    //     }
+    public function render($viewName = null, array $vars = null)
+    {
+        if (is_null($viewName)) {
+            throw new \InvalidArgumentException('View name is expected.');
+        }
 
-    //     $controller = strtolower(preg_replace('/Controller$/', '', $this->application->getControllerName()));
-    //     $viewPath = '/modules/' . $this->application->getModuleName() . '/views/' . $controller . '/' . $viewName;
-    //     $layoutPath = '/layouts/' . $this->getPathLayout();
 
-    //     if (!file_exists($this->getCompleteViewPath($layoutPath))) {
-    //         die('Layout ' . $this->getPathLayout() . '.phtml does not exist.'); // @codeCoverageIgnore
-    //     }
+        $controller = strtolower(preg_replace('/Controller$/', '', $this->application->getControllerName()));
+        $viewPath = '/modules/' . $this->application->getModuleName() . '/views/' . $controller . '/' . $viewName;
+        $layoutPath = '/layouts/' . $this->getPathLayout();
 
-    //     if (is_array($vars) && count($vars) > 0) {
-    //         $vars['view'] = $this->getCompleteViewPath($viewPath);
-    //     } else {
-    //         $vars = ['view' => $this->getCompleteViewPath($viewPath)];
-    //     }
+        if (!file_exists($this->getCompleteViewPath($layoutPath))) {
+            throw new \RuntimeException(sprintf('Layout not found: %s', $this->getPathLayout()));
+        }
 
-    //     $vars = array_merge($vars, $this->vars);
+        if (is_array($vars) && count($vars) > 0) {
+            $vars['view'] = $this->getCompleteViewPath($viewPath);
+        } else {
+            $vars = ['view' => $this->getCompleteViewPath($viewPath)];
+        }
 
-    //     $this->vars = $vars;
+        $vars = array_merge($vars, $this->vars);
 
-    //     if ($this->disableLayout) {
-    //         $this->partial($viewPath, $vars);
-    //     } else {
-    //         $this->partial($layoutPath, $vars);
-    //     }
-    // }
+        $this->vars = $vars;
+
+        if ($this->disableLayout) {
+            $this->partial($viewPath, $vars);
+        } else {
+            $this->partial($layoutPath, $vars);
+        }
+    }
 
     /**
      * Adds a partial to be rendered
      * @param string $partialName
      * @param array $vars
      */
-    // public function partial($name = null, array $vars = [])
-    // {
-    //     if (is_null($name)) {
-    //         throw new \InvalidArgumentException('Partial name is expected.');
-    //     }
+    public function partial($name = null, array $vars = [])
+    {
+        if (is_null($name)) {
+            throw new \InvalidArgumentException('Partial name is expected.');
+        }
 
-    //     $partialVars = array_merge($this->vars, $vars);
+        $partialVars = array_merge($this->vars, $vars); // @codeCoverageIgnore
 
-    //     if (is_array($partialVars) && count($partialVars) > 0) {
-    //         extract($partialVars); // @codeCoverageIgnore
-    //     }
+        if (is_array($partialVars) && count($partialVars) > 0) { // @codeCoverageIgnore
+            extract($partialVars); // @codeCoverageIgnore
+        }
 
-    //     require_once $this->getCompleteViewPath($name); // @codeCoverageIgnore
-    // }
+        require_once $this->getCompleteViewPath($name); // @codeCoverageIgnore
+    }
 
     /**
      * @param boolean $bool
@@ -103,37 +104,41 @@ class View2
      * @return string
      * @codeCoverageIgnore
      */
-    // private function getPathLayout()
-    // {
-    //     if (!is_null($this->layout)) {
-    //         return $this->layout;
-    //     }
+    private function getPathLayout()
+    {
+        if (!is_null($this->layout)) {
+            return $this->layout;
+        }
 
-    //     $modulesLayout = $this->application->getModulesLayout();
+        $modulesLayout = $this->application->getModulesLayout();
 
-    //     $layouts = array_keys($modulesLayout);
-    //     $i = 0;
+        $layouts = array_keys($modulesLayout);
+        $i = 0;
 
-    //     foreach ($modulesLayout as $modules) {
-    //         if (in_array($this->application->getModuleName(), $modules)) {
-    //             return $layouts[$i];
-    //         }
-    //         ++$i;
-    //     }
+        foreach ($modulesLayout as $modules) {
+            if (in_array($this->application->getModuleName(), $modules)) {
+                return $layouts[$i];
+            }
+            ++$i;
+        }
 
-    //     return reset($layouts);
-    // }
+        return reset($layouts);
+    }
 
     /**
      * @param string $path
      * @return string
      */
-    // public function getCompleteViewPath($path)
-    // {
-    //     return '../src/' . $this->application->getApplicationFolderName() . $path . '.phtml';
-    // }
+    public function getCompleteViewPath(string $path) : string
+    {
+        return sprintf(
+            '../src/%s%s.phtml',
+            $this->application->getApplicationFolderName(),
+            $path
+        );
+    }
 
-    public function url(string $routeName = null, array $params = null)
+    public function url(string $routeName = null, array $params = null) : string
     {
         if (is_null($routeName)) {
             throw new \InvalidArgumentException('A route name is expected.');
