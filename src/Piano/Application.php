@@ -189,7 +189,6 @@ class Application
             $url = '//' . implode('/', $url);
 
             $this->header("Location: $url");
-            return;
         }
     }
 
