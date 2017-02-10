@@ -44,4 +44,9 @@ class Controller
     {
         return $this->application->getDi();
     }
+
+    public function getParams() : array
+    {
+        return $this->application->getParams();
+    }
 }
