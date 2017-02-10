@@ -1,5 +1,12 @@
 <?php
 
+use Piano\Mvc\View;
+use Piano\Application;
+
+/**
+ * @group php7
+ * @group php7-view
+ */
 class ViewTest extends PHPUnit_Framework_TestCase
 {
     private $view;
@@ -8,61 +15,15 @@ class ViewTest extends PHPUnit_Framework_TestCase
     {
         $_SERVER['REQUEST_URI'] = '/';
 
-        $config = $this->getConfig();
-        $router = $this->getRouter();
-        $router->enableSearchEngineFriendly();
-
-        $app = new Piano\Application($config, $router);
-
-        $this->view = new Piano\Mvc\View($app);
+        $di = $this->getTestingContainer($sef = true);
+        $app = new Application($di);
+        $app->setUrl('/');
+        $this->view = new View($app);
     }
 
     /**
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage View name is expected.
-     */
-    public function testRenderShouldThrowAnInvalidArgumentException()
-    {
-        $this->view->render();
-    }
-
-    public function testAddVarMethodShouldWork()
-    {
-        $this->view->addVar('test');
-        $this->assertInternalType('array', $this->view->getVars());
-    }
-
-    public function testSetVarsMethodShouldWork()
-    {
-        $this->view->setVars(['test1' => true, 'test2' => false]);
-        $this->assertInternalType('array', $this->view->getVars());
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Partial name is expected.
-     */
-    public function testPartialShouldThrowAnInvalidArgumentException()
-    {
-        $this->view->partial();
-    }
-
-    public function testDisableLayoutShouldWork()
-    {
-        $this->view->disableLayout();
-        $this->view->disableLayout(true);
-        $this->view->disableLayout(false);
-    }
-
-    public function testGetCompleteViewPathShouldWork()
-    {
-        $expected = '../src/Piano/menu.phtml';
-        $this->assertEquals($expected, $this->view->getCompleteViewPath('/menu'));
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Param route name is expected.
+     * @expectedExceptionMessage A route name is expected.
      */
     public function testUrlShouldThrowAnInvalidArgumentException()
     {
@@ -73,75 +34,104 @@ class ViewTest extends PHPUnit_Framework_TestCase
     {
         $_SERVER['REQUEST_URI'] = '/';
 
-        $config = $this->getConfig();
-        $router = $this->getRouter();
-        $router->enableSearchEngineFriendly();
+        $di = $this->getTestingContainer($sef = true);
+        $app = new Application($di);
+        $view = new View($app);
 
-        $app = new Piano\Application($config, $router);
+        $this->assertEquals(
+            '/',
+            $view->url('default')
+        );
 
-        $view = new Piano\Mvc\View($app);
+        $this->assertEquals(
+            '/admin',
+            $view->url('defaultAdmin')
+        );
 
-        $this->assertEquals('/', $this->view->url('default'));
-        $this->assertEquals('/admin', $this->view->url('defaultAdmin'));
+        $di = $this->getTestingContainer($sef = false);
+        $app = new Application($di);
+        $view = new View($app);
 
-        $router->enableSearchEngineFriendly(false);
+        $this->assertEquals(
+            '/application/index/index',
+            $view->url('default')
+        );
 
-        $app = new Piano\Application($config, $router);
-
-        $view = new Piano\Mvc\View($app);
-
-        $this->assertEquals('/', $this->view->url('default'));
-        $this->assertEquals('/admin', $this->view->url('defaultAdmin'));
+        $this->assertEquals(
+            '/admin/index/index',
+            $view->url('defaultAdmin')
+        );
     }
 
-    private function getRouter()
+    public function testSetVarsMethodShouldWork()
     {
-        $routes = [
-            'default' => [
-                'route' => '/',
-                'module' => 'application',
-                'controller' => 'index',
-                'action' => 'index'
-            ],
-            'defaultAdmin' => [
-                'route' => '/admin',
-                'module' => 'admin',
-                'controller' => 'index',
-                'action' => 'index'
-            ],
-            'user_edit' => [
-                'route' => '/users/:id',
-                'module' => 'application',
-                'controller' => 'user',
-                'action' => 'edit',
-                [
-                    ':id' => '\d+'
-                ]
-            ],
-            'error_404' => [
-                'route' => '/error',
-                'module' => 'application',
-                'controller' => 'error',
-                'action' => 'error',
-            ],
-            'redirect' => [
-                'route' => '/redirect/contact',
-                'module' => 'application',
-                'controller' => 'index',
-                'action' => 'redirectTest',
-            ]
-        ];
+        $this->assertTrue(
+            method_exists($this->view, 'setVars'),
+            'Method "setVars()" must exist'
+        );
 
-        $router = new Piano\Router();
-        $router->setRoutes($routes);
+        $this->assertTrue(
+            method_exists($this->view, 'getVars'),
+            'Method "getVars()" must exist'
+        );
 
-        return $router;
+        $this->view->setVars(['test1' => true, 'test2' => false]);
+        $vars = $this->view->getVars();
+
+        $this->assertInternalType('array', $this->view->getVars());
+        $this->assertArrayHasKey('test1', $vars, 'Key "test1" must exist');
+        $this->assertArrayHasKey('test2', $vars, 'Key "test2" must exist');
+        $this->assertTrue($vars['test1'], 'It must be true');
+        $this->assertFalse($vars['test2'], 'It must be true');
     }
 
-    private function getConfig()
+    public function testAddVarMethodShouldWork()
     {
-        $config = new \Piano\Config\Ini('tests/configTest.ini');
-        return $config;
+        $this->assertTrue(
+            method_exists($this->view, 'addVar'),
+            'Method "addVar()" must exist'
+        );
+
+        $this->view->addVar('test');
+
+        $vars = $this->view->getVars();
+        $this->assertInternalType('array', $vars);
+        $this->assertArrayHasKey('test', $vars, 'Key "test" must exist');
+        $this->assertNull($vars['test'], 'It must be null');
+    }
+
+    public function testDisableLayoutShouldWork()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'disableLayout'),
+            'Method "disableLayout()" must exist'
+        );
+
+        $this->view->disableLayout();
+        $this->view->disableLayout(true);
+        $this->view->disableLayout(false);
+    }
+
+    public function testSetCssShouldReturnAnInstanceOfView()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'setCss'),
+            'Method "setCss()" must exist'
+        );
+
+        $expected = $this->view->setCss(['path/to/file.css']);
+        $this->assertInstanceOf('Piano\Mvc\View', $expected);
+    }
+
+    public function testSetJsShouldReturnAnInstanceOfView()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'setJs'),
+            'Method "setJs()" must exist'
+        );
+
+        $expected = $this->view->setJs(['path/to/file.js']);
+        $this->assertInstanceOf('Piano\Mvc\View', $expected);
     }
 
     /**
@@ -149,13 +139,12 @@ class ViewTest extends PHPUnit_Framework_TestCase
      */
     public function testAddJsShouldReturnAnInstanceOfView($expected, $actual)
     {
-        $this->assertInstanceOf($expected, $this->view->addJs($actual));
-    }
+        $this->assertTrue(
+            method_exists($this->view, 'addJs'),
+            'Method "addJs()" must exist'
+        );
 
-    public function testSetJsShouldReturnAnInstanceOfView()
-    {
-        $expected = $this->view->setJs(['path/to/file.js']);
-        $this->assertInstanceOf('Piano\Mvc\View', $expected);
+        $this->assertInstanceOf($expected, $this->view->addJs($actual));
     }
 
     /**
@@ -163,13 +152,12 @@ class ViewTest extends PHPUnit_Framework_TestCase
      */
     public function testAddCssShouldReturnAnInstanceOfView($expected, $actual)
     {
-        $this->assertInstanceOf($expected, $this->view->addCss($actual));
-    }
+        $this->assertTrue(
+            method_exists($this->view, 'addCss'),
+            'Method "addCss()" must exist'
+        );
 
-    public function testSetCssShouldReturnAnInstanceOfView()
-    {
-        $expected = $this->view->setCss(['path/to/file.css']);
-        $this->assertInstanceOf('Piano\Mvc\View', $expected);
+        $this->assertInstanceOf($expected, $this->view->addCss($actual));
     }
 
     public function jsPathProvider()
@@ -188,5 +176,123 @@ class ViewTest extends PHPUnit_Framework_TestCase
             ['Piano\Mvc\View', null],
             ['Piano\Mvc\View', ''],
         ];
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage View name is expected.
+     */
+    public function testRenderShouldThrowAnInvalidArgumentException()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'render'),
+            'Method "render()" must exist'
+        );
+
+        $this->view->render();
+    }
+
+    public function testGetCompleteViewPathShouldWork()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'getCompleteViewPath'),
+            'Method "getCompleteViewPath()" must exist'
+        );
+
+        $expected = '../src/Piano/layouts/menu.phtml';
+        $this->assertEquals($expected, $this->view->getCompleteViewPath('/layouts/menu'));
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Partial name is expected.
+     */
+    public function testPartialShouldThrowAnInvalidArgumentException()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'partial'),
+            'Method "partial()" must exist'
+        );
+
+        $this->view->partial();
+    }
+
+    /**
+     * @expectedException RuntimeException
+     * @expectedExceptionMessageRegExp /Layout not found: \w+./
+     */
+    public function testPartialShouldThrowARuntimeException()
+    {
+        $this->assertTrue(
+            method_exists($this->view, 'render'),
+            'Method "render()" must exist'
+        );
+
+        $this->view->render('/teste');
+    }
+
+    private function getTestingContainer($searchEngineFriendly = true)
+    {
+        $container = new Piano\Container();
+        $container['config'] = function () {
+            return new Piano\Config\Ini('tests/configTest.ini');
+        };
+
+        $container['router'] = function () use ($searchEngineFriendly) {
+            $routes = [
+                'default' => [
+                    'route' => '/',
+                    'module' => 'application',
+                    'controller' => 'index',
+                    'action' => 'index'
+                ],
+                'defaultAdmin' => [
+                    'route' => '/admin',
+                    'module' => 'admin',
+                    'controller' => 'index',
+                    'action' => 'index'
+                ],
+                'userEdit' => [
+                    'route' => '/users/:id',
+                    'module' => 'application',
+                    'controller' => 'user',
+                    'action' => 'edit',
+                    [
+                        ':id' => '\d+'
+                    ]
+                ],
+                'error404' => [
+                    'route' => '/error',
+                    'module' => 'application',
+                    'controller' => 'error',
+                    'action' => 'error',
+                ],
+                'redirect' => [
+                    'route' => '/redirect/contact',
+                    'module' => 'application',
+                    'controller' => 'index',
+                    'action' => 'redirectTest',
+                ]
+            ];
+
+            $router = new Piano\Router();
+            $router->setRoutes($routes);
+            $router->enableSearchEngineFriendly($searchEngineFriendly);
+
+            return $router;
+        };
+
+        $container['modulesLayout'] = function () {
+            return [
+                'base' => [
+                    'application',
+                ],
+                'admin' => [
+                    'admin',
+                ],
+            ];
+        };
+
+        return $container;
     }
 }

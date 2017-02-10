@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Piano\Mvc;
 
 /**
@@ -12,15 +14,8 @@ class View
      */
     private $application;
 
-
     private $disableLayout = false;
     private $layout = null;
-
-    /**
-     * @var Piano\Helpers\Config
-     */
-    private $config;
-
     private $jsFilesPath = [];
     private $cssFilesPath = [];
     private $vars = [];
@@ -28,20 +23,19 @@ class View
     public function __construct(\Piano\Application $application)
     {
         $this->application = $application;
-        $this->config = $application->getConfig();
     }
 
-    public function addVar($variable, $value = null)
+    public function addVar(string $variable, $value = null)
     {
         $this->vars[$variable] = $value;
     }
 
-    public function setVars(array $variables = array())
+    public function setVars(array $variables = [])
     {
         $this->vars = $variables;
     }
 
-    public function getVars()
+    public function getVars() : array
     {
         return $this->vars;
     }
@@ -57,24 +51,22 @@ class View
         $layoutPath = '/layouts/' . $this->getPathLayout();
 
         if (!file_exists($this->getCompleteViewPath($layoutPath))) {
-            die('Layout ' . $this->getPathLayout() . '.phtml does not exist.'); // @codeCoverageIgnore
+            throw new \RuntimeException(sprintf('Layout not found: %s', $this->getPathLayout()));
         }
 
-        if (is_array($vars) && count($vars) > 0) {
-            $vars['view'] = $this->getCompleteViewPath($viewPath);
-        } else {
+        $vars['view'] = $this->getCompleteViewPath($viewPath);
+        if (!is_array($vars) || count($vars) == 0) {
             $vars = ['view' => $this->getCompleteViewPath($viewPath)];
         }
 
-        $vars = array_merge($vars, $this->vars);
+        $this->vars = array_merge($vars, $this->vars);
 
-        $this->vars = $vars;
-
+        $load = $layoutPath;
         if ($this->disableLayout) {
-            $this->partial($viewPath, $vars);
-        } else {
-            $this->partial($layoutPath, $vars);
+            $load = $viewPath;
         }
+
+        $this->partial($load, $this->vars);
     }
 
     /**
@@ -88,9 +80,9 @@ class View
             throw new \InvalidArgumentException('Partial name is expected.');
         }
 
-        $partialVars = array_merge($this->vars, $vars);
+        $partialVars = array_merge($this->vars, $vars); // @codeCoverageIgnore
 
-        if (is_array($partialVars) && count($partialVars) > 0) {
+        if (is_array($partialVars) && count($partialVars) > 0) { // @codeCoverageIgnore
             extract($partialVars); // @codeCoverageIgnore
         }
 
@@ -100,7 +92,7 @@ class View
     /**
      * @param boolean $bool
      */
-    public function disableLayout($bool = true)
+    public function disableLayout(bool $bool = true)
     {
         $this->disableLayout = $bool;
     }
@@ -115,7 +107,7 @@ class View
             return $this->layout;
         }
 
-        $modulesLayout = $this->application->getModulesLayout();
+        $modulesLayout = $this->application->getDi()['modulesLayout'];
 
         $layouts = array_keys($modulesLayout);
         $i = 0;
@@ -134,21 +126,25 @@ class View
      * @param string $path
      * @return string
      */
-    public function getCompleteViewPath($path)
+    public function getCompleteViewPath(string $path) : string
     {
-        return '../src/' . $this->application->getApplicationFolderName() . $path . '.phtml';
+        return sprintf(
+            '../src/%s%s.phtml',
+            $this->application->getApplicationFolderName(),
+            $path
+        );
     }
 
-    public function url($routeName = null, array $params = null)
+    public function url(string $routeName = null, array $params = null) : string
     {
         if (is_null($routeName)) {
-            throw new \InvalidArgumentException('Param route name is expected.');
+            throw new \InvalidArgumentException('A route name is expected.');
         }
 
-        return $this->application->getRouter()->getUrl($routeName, $params);
+        return $this->application->getDi()['router']->getUrl($routeName, $params);
     }
 
-    public function addJs($jsFilePath = null)
+    public function addJs($jsFilePath = null) : \Piano\Mvc\View
     {
         if (!is_null($jsFilePath)) {
             $this->jsFilesPath[] = $jsFilePath;
@@ -157,7 +153,7 @@ class View
         return $this;
     }
 
-    public function setJs(array $jsFilesPath)
+    public function setJs(array $jsFilesPath) : \Piano\Mvc\View
     {
         if (!empty($jsFilesPath)) {
             $this->jsFilesPath = $jsFilesPath;
@@ -176,7 +172,7 @@ class View
         }
     }
 
-    public function addCss($cssFilePath = null)
+    public function addCss($cssFilePath = null) : \Piano\Mvc\View
     {
         if (!is_null($cssFilePath)) {
             $this->cssFilesPath[] = $cssFilePath;
@@ -185,7 +181,7 @@ class View
         return $this;
     }
 
-    public function setCss(array $cssFilesPath)
+    public function setCss(array $cssFilesPath) : \Piano\Mvc\View
     {
         if (!empty($cssFilesPath)) {
             $this->cssFilesPath = $cssFilesPath;
