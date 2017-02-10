@@ -46,7 +46,6 @@ class View2
             throw new \InvalidArgumentException('View name is expected.');
         }
 
-
         $controller = strtolower(preg_replace('/Controller$/', '', $this->application->getControllerName()));
         $viewPath = '/modules/' . $this->application->getModuleName() . '/views/' . $controller . '/' . $viewName;
         $layoutPath = '/layouts/' . $this->getPathLayout();
@@ -55,21 +54,19 @@ class View2
             throw new \RuntimeException(sprintf('Layout not found: %s', $this->getPathLayout()));
         }
 
-        if (is_array($vars) && count($vars) > 0) {
-            $vars['view'] = $this->getCompleteViewPath($viewPath);
-        } else {
+        $vars['view'] = $this->getCompleteViewPath($viewPath);
+        if (!is_array($vars) || count($vars) == 0) {
             $vars = ['view' => $this->getCompleteViewPath($viewPath)];
         }
 
-        $vars = array_merge($vars, $this->vars);
+        $this->vars = array_merge($vars, $this->vars);
 
-        $this->vars = $vars;
-
+        $load = $layoutPath;
         if ($this->disableLayout) {
-            $this->partial($viewPath, $vars);
-        } else {
-            $this->partial($layoutPath, $vars);
+            $load = $viewPath;
         }
+
+        $this->partial($load, $this->vars);
     }
 
     /**
@@ -110,7 +107,7 @@ class View2
             return $this->layout;
         }
 
-        $modulesLayout = $this->application->getModulesLayout();
+        $modulesLayout = $this->application->getDi()['modulesLayout'];
 
         $layouts = array_keys($modulesLayout);
         $i = 0;

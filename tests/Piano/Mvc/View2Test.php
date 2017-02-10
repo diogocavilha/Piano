@@ -219,7 +219,7 @@ class View2Test extends PHPUnit_Framework_TestCase
 
     /**
      * @expectedException RuntimeException
-     * @expectedExceptionMessageRegExp Layout not found: \w+.
+     * @expectedExceptionMessageRegExp /Layout not found: \w+./
      */
     public function testPartialShouldThrowARuntimeException()
     {
@@ -228,9 +228,7 @@ class View2Test extends PHPUnit_Framework_TestCase
             'Method "render()" must exist'
         );
 
-        $this->markTestIncomplete();
-
-        // $this->view->render('/teste');
+        $this->view->render('/teste');
     }
 
     private function getTestingContainer($searchEngineFriendly = true)
@@ -282,6 +280,17 @@ class View2Test extends PHPUnit_Framework_TestCase
             $router->enableSearchEngineFriendly($searchEngineFriendly);
 
             return $router;
+        };
+
+        $container['modulesLayout'] = function () {
+            return [
+                'base' => [
+                    'application',
+                ],
+                'admin' => [
+                    'admin',
+                ],
+            ];
         };
 
         return $container;
