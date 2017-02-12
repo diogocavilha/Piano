@@ -220,7 +220,7 @@ class Application
         }
     }
 
-    private function checkControllerPath()
+    private function requireController()
     {
         $controllerPath = sprintf(
             '../src/%s/modules/%s/controllers/%s.php',
@@ -232,22 +232,20 @@ class Application
         if (!file_exists($controllerPath)) {
             throw new \Exception(sprintf('Controller not found: %s', $this->getControllerName()));
         }
+
+        require_once $controllerPath;
     }
 
     public function run()
     {
         $this->checkModulePath();
-        $this->checkControllerPath();
+        $this->requireController();
 
-        $controller = sprintf(
-            '\\%s\\modules\\%s\\controllers\\%s',
-            $this->getApplicationFolderName(),
-            $this->getModuleName(),
-            $this->getControllerName()
-        );
+        $declaredClasses = get_declared_classes();
+        $namespaceController = end($declaredClasses);
 
         $action = sprintf('%sAction', $this->getActionName());
-        $controller = new $controller($this);
+        $controller = new $namespaceController($this);
 
         if (!method_exists($controller, $action)) {
             throw new \Exception('Action not found: %s', $this->getActionName());
