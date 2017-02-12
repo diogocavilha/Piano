@@ -12,6 +12,8 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $_SERVER['REQUEST_URI'] = '/';
+
         $di = $this->getTestingContainer();
 
         $this->class = new Application($di);
@@ -252,6 +254,19 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
 
         $params = ['id' => null];
         $class->redirect('userEdit', $params);
+    }
+
+    public function testItMustRunTheApplication()
+    {
+        $_SERVER['REQUEST_URI'] = '/';
+
+        $di = $this->getTestingContainer();
+        $class = new Application($di);
+
+        $this->assertTrue(
+            method_exists($class, 'run'),
+            'Method "run()" must exist'
+        );
     }
 
     private function getTestingContainer($searchEngineFriendly = true)

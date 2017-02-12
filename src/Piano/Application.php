@@ -28,6 +28,8 @@ class Application
         }
 
         $this->container = $container;
+
+        $this->setUrl();
     }
 
     public function getDi() : Container
@@ -117,13 +119,18 @@ class Application
 
         $router = $this->getDi()['router'];
         $route = $router->getRoute($urlPath);
-        if (!is_null($route) && $router->isSearchEngineFriendly() && empty($args)) {
+
+        if (is_null($route)) {
+            return;
+        }
+
+        if ($router->isSearchEngineFriendly() && empty($args)) {
             $url = sprintf('//%s%s', $_SERVER['HTTP_HOST'], $route['route']);
             $this->header("Location: $url");
             return;
         }
 
-        if (!is_null($route) && $router->isSearchEngineFriendly() && !empty($args)) {
+        if ($router->isSearchEngineFriendly() && !empty($args)) {
             $routePieces = explode('/', $route['route']);
             $urlPattern = [];
             $url = [];
@@ -149,7 +156,7 @@ class Application
             return;
         }
 
-        if (!is_null($route) && !$router->isSearchEngineFriendly() && empty($args)) {
+        if (!$router->isSearchEngineFriendly() && empty($args)) {
             $url = sprintf(
                 '//%s/%s/%s/%s',
                 $_SERVER['HTTP_HOST'],
@@ -161,7 +168,7 @@ class Application
             return;
         }
 
-        if (!is_null($route) && !$router->isSearchEngineFriendly() && !empty($args)) {
+        if (!$router->isSearchEngineFriendly() && !empty($args)) {
             $routePieces = explode('/', $route['route']);
 
             $url = $urlPattern = [
@@ -198,5 +205,54 @@ class Application
     protected function header(string $location)
     {
         header($location);
+    }
+
+    private function checkModulePath()
+    {
+        $modulePath = sprintf(
+            '../src/%s/modules/%s',
+            $this->getApplicationFolderName(),
+            $this->getModuleName()
+        );
+
+        if (!file_exists($modulePath)) {
+            throw new \Exception(sprintf('Module not found: %s', $this->getModuleName()));
+        }
+    }
+
+    private function checkControllerPath()
+    {
+        $controllerPath = sprintf(
+            '../src/%s/modules/%s/controllers/%s.php',
+            $this->getApplicationFolderName(),
+            $this->getModuleName(),
+            $this->getControllerName()
+        );
+
+        if (!file_exists($controllerPath)) {
+            throw new \Exception(sprintf('Controller not found: %s', $this->getControllerName()));
+        }
+    }
+
+    public function run()
+    {
+        $this->checkModulePath();
+        $this->checkControllerPath();
+
+        $controller = sprintf(
+            '\\%s\\modules\\%s\\controllers\\%s',
+            $this->getApplicationFolderName(),
+            $this->getModuleName(),
+            $this->getControllerName()
+        );
+
+        $action = sprintf('%sAction', $this->getActionName());
+        $controller = new $controller($this);
+
+        if (!method_exists($controller, $action)) {
+            throw new \Exception('Action not found: %s', $this->getActionName());
+        }
+
+        $controller->$action();
     }
 }
