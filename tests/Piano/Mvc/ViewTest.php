@@ -3,10 +3,6 @@
 use Piano\Mvc\View;
 use Piano\Application;
 
-/**
- * @group php7
- * @group php7-view
- */
 class ViewTest extends PHPUnit_Framework_TestCase
 {
     private $view;

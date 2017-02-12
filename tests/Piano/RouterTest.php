@@ -2,10 +2,6 @@
 
 use Piano\Router;
 
-/**
- * @group php7
- * @group url
- */
 class RouterTest extends PHPUnit_Framework_Testcase
 {
     private $router;

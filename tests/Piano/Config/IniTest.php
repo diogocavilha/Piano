@@ -2,9 +2,6 @@
 
 use Piano\Config\Ini;
 
-/**
- * @group php7
- */
 class IniTest extends \PHPUnit_Framework_TestCase
 {
     public $class;

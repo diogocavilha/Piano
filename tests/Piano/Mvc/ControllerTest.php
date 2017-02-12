@@ -4,9 +4,6 @@ use Piano\Mvc\View;
 use Piano\Mvc\Controller;
 use Piano\Application;
 
-/**
- * @group php7
- */
 class ControllerTest extends PHPUnit_Framework_TestCase
 {
     private $controller;

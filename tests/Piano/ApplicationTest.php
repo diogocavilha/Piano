@@ -3,9 +3,6 @@
 use Piano\Application;
 use Piano\Container;
 
-/**
- * @group php7
- */
 class ApplicationTest extends PHPUnit_Framework_TestCase
 {
     private $class;
