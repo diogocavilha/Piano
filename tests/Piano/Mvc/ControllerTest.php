@@ -34,6 +34,19 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testItMustGetUrlParams()
+    {
+        $this->assertTrue(
+            method_exists($this->controller, 'getParams'),
+            'Method "getParams()" must exist'
+        );
+
+        $this->assertInternalType(
+            'array',
+            $this->controller->getParams()
+        );
+    }
+
     private function getTestingContainer($searchEngineFriendly = true)
     {
         $container = new Piano\Container();
