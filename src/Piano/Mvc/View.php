@@ -74,9 +74,9 @@ class View
      * @param string $partialName
      * @param array $vars
      */
-    public function partial($name = null, array $vars = [])
+    public function partial($pianoInternalPartialName = null, array $vars = [])
     {
-        if (is_null($name)) {
+        if (is_null($pianoInternalPartialName)) {
             throw new \InvalidArgumentException('Partial name is expected.');
         }
 
@@ -86,7 +86,7 @@ class View
             extract($partialVars); // @codeCoverageIgnore
         }
 
-        require_once $this->getCompleteViewPath($name); // @codeCoverageIgnore
+        require_once $this->getCompleteViewPath($pianoInternalPartialName); // @codeCoverageIgnore
     }
 
     /**
