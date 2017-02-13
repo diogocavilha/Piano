@@ -44,6 +44,23 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testItMustGetUrlParamByName()
+    {
+        $_SERVER['REQUEST_URI'] = '/';
+
+        $di = $this->getTestingContainer($sef = false);
+        $app = new Application($di);
+        $app->setUrl('/application/user/edit/id/5');
+        $controller = new Controller($app);
+
+        $this->assertTrue(
+            method_exists($controller, 'getParam'),
+            'Method "getParam()" must exist'
+        );
+
+        $this->assertEquals('5', $controller->getParam('id'));
+    }
+
     private function getTestingContainer($searchEngineFriendly = true)
     {
         $container = new Piano\Container();

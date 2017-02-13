@@ -67,6 +67,15 @@ class Application
         return $this->urlParams;
     }
 
+    public function getParam(string $name, string $default = null) : string
+    {
+        if (isset($this->urlParams[$name])) {
+            return $this->urlParams[$name] ?? $default;
+        }
+
+        throw new \Exception("Key '$name' not found in array.");
+    }
+
     /**
      * Sets the requested URL.
      *

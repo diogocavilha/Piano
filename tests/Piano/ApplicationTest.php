@@ -266,6 +266,31 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testGetParamShouldWork()
+    {
+        $this->assertTrue(
+            method_exists($this->class, 'getParam'),
+            'Method "getParam()" must exist'
+        );
+
+        $_SERVER['REQUEST_URI'] = '/';
+
+        $di = $this->getTestingContainer($sef = false);
+        $app = new Application($di);
+
+        $app->setUrl('/application/user/edit/id/5');
+        $this->assertEquals('5', $app->getParam('id'));
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testGetParamShouldThrowAnException()
+    {
+        $this->class->getParam('key_does_not_exist');
+    }
+
+
     private function getTestingContainer($searchEngineFriendly = true)
     {
         $container = new Container();

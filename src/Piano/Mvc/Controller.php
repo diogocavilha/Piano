@@ -49,4 +49,9 @@ class Controller
     {
         return $this->application->getParams();
     }
+
+    public function getParam(string $name, string $default = null) : string
+    {
+        return $this->application->getParam($name, $default);
+    }
 }
