@@ -1,27 +1,39 @@
 <?php
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/routes.php';
 
 if (getenv('APPLICATION_ENV') == 'development') {
     ini_set('display_errors', 1);
     error_reporting(-1);
 }
 
-$layoutPerModule = [
-    'base' => [
-        'application',
-    ]
-];
+$di = new \Piano\Container();
+$di['config'] = function () {
+    return new \Piano\Config\Ini(__DIR__ . '/../src/app/config/config.ini');
+};
 
-$config = new \Piano\Config\Ini(
-    __DIR__ . '/../src/app/config/config.ini'
-);
+$di['router'] = function () {
+    $routes = [
+        'default' => [
+            'route' => '/',
+            'module' => 'application',
+            'controller' => 'index',
+            'action' => 'index',
+        ],
+    ];
 
-$router = new \Piano\Router();
-$router->setRoutes($routes)
-    ->enableSearchEngineFriendly(true);
+    return (new \Piano\Router())
+        ->setRoutes($routes)
+        ->enableSearchEngineFriendly(false);
+};
 
-$app = new \Piano\Application($config, $router);
-$app->registerModulesLayout($layoutPerModule);
+$di['modulesLayout'] = function () {
+    return [
+        'base' => [
+            'application',
+        ]
+    ];
+};
+
+$app = new \Piano\Application($di);
 $app->run();

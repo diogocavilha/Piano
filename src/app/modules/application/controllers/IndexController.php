@@ -1,18 +1,17 @@
 <?php
 
-namespace app\modules\application\controllers;
+namespace ApplicationName\Application\Controllers;
 
-use Piano\Mvc\Controller;
-use PDO;
-
-class IndexController extends Controller
+class IndexController extends \Piano\Mvc\Controller
 {
     public function indexAction()
     {
-        $model = new \app\dataAccess\UserDataAccess();
-
-        $user = $model->getFirst();
-
-        $this->view->render('index', ['user' => $user]);
+        $this->view->render(
+            'index',
+            [
+                'namespace' => __NAMESPACE__,
+                'user' => 'Diogo',
+            ]
+        );
     }
 }
