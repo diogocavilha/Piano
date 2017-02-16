@@ -67,7 +67,7 @@ class Router
             $currentUrlParams = [];
             $routePieces = explode('/', $route['route']);
             foreach ($routePieces as $pos => $segment) {
-                if ($this->isVar($segment)) {
+                if ($this->isVar($segment) && isset($urlPieces[$pos])) {
                     $currentUrlParams[$this->getVar()] = $urlPieces[$pos];
                     $currentUrlPiecesPattern[$pos] = $route[0][$segment];
                     continue;
