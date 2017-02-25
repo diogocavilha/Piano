@@ -8,7 +8,7 @@ It's only a very simple MVC structure.
 # Creating the project structure
 
 ```bash
-composer create-project piano/mvc myProject dev-project
+composer create-project piano/mvc:dev-application myProject
 ```
 
 ## Controller
