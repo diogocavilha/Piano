@@ -1,9 +1,12 @@
-# Piano MVC (Abandoned!) [![Build Status](https://travis-ci.org/diogocavilha/Piano.svg?branch=master)](https://travis-ci.org/diogocavilha/Piano)
+[![Build Status](https://travis-ci.org/diogocavilha/Piano.svg?branch=master)](https://travis-ci.org/diogocavilha/Piano)
 
+# Piano MVC
 
 This is not a micro/mini/whatever framework nor claims to be.
 
 It's only a very simple MVC structure.
+
+> WARNING: This has been just like a lab. I don't update this project anymore. If you want to use it, the ball is on your court.
 
 # Creating the project structure
 
