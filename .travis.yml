@@ -8,5 +8,5 @@ install:
   - composer install
 
 script:
-  - ./vendor/bin/phpunit --group php7
+  - ./vendor/bin/phpunit
   #- ./vendor/bin/phpunit --group php7
