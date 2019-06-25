@@ -271,7 +271,7 @@ protected $pdo;
 ```
 > A PHP PDO instance.
 
-===
+---
 
 #### Methods from `Piano\Mvc\DataAccessAbstract`
 
@@ -292,7 +292,7 @@ Create a record into database.
 
 > Returns the last insert id on success or FALSE on failure.
 
-===
+---
 
 ```php
 update(array $data, $where, array $dataBind)
@@ -314,7 +314,7 @@ Change a database record.
 
 > Returns TRUE on success or FALSE on failure.
 
-===
+---
 
 ```php
 delete($where, array $dataBind = array())
@@ -333,7 +333,7 @@ Delete a record from database.
 
 > Returns TRUE on success or FALSE on failure.
 
-===
+---
 
 ```php
 getAll([$configData = null, $order = null, $count = null, $offset = null])
@@ -380,7 +380,7 @@ $configData = array(
 > - When fetchClass parameter is true or omitted, it returns an array of model objects.
 > - When fetchClass parameter is false, it returns an associative array.
 
-===
+---
 
 ```php
 getFirst($configData = null, $order = null)
@@ -418,7 +418,7 @@ $configData = array(
 > - When fetchClass parameter is true or omitted, it returns a model object.
 > - When fetchClass parameter is false, it returns an associative array.
 
-===
+---
 
 ### Examples:
 
