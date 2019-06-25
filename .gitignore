@@ -2,3 +2,5 @@
 .phpintel/
 coverage-html/
 tests/coverageReport/
+tests/coverageReport/
+tests/coverage

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+container_id=$(docker ps --format "table {{.ID}}\t{{.Names}}" \
+    | grep -iP 'piano_php_' \
+    | cut -d" " -f 1)
+
+docker exec -it $container_id bash \
+    -c "cd /www/Piano \
+        && ./vendor/bin/phpunit $*"
