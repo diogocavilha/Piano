@@ -9,3 +9,4 @@ install:
 
 script:
   - ./vendor/bin/phpunit --group php7
+  #- ./vendor/bin/phpunit --group php7
